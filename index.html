@@ -1,0 +1,1974 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ОВТ Lifecycle — Semantic Knowledge Platform v3 · МОУ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Bebas+Neue&family=Literata:ital,opsz,wght@0,7..72,300;0,7..72,400;0,7..72,500;1,7..72,300&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════
+   DESIGN SYSTEM — SEMANTIC MILITARY KNOWLEDGE GRID v3
+   ═══════════════════════════════════════════════════════ */
+:root {
+  --ink:       #070b12;
+  --s0:        #0a0f1a;
+  --s1:        #0f1624;
+  --s2:        #141e2f;
+  --s3:        #1a2639;
+  --s4:        #212f44;
+  --s5:        #2a3a52;
+
+  --wire-0:    rgba(80,140,220,0.06);
+  --wire-1:    rgba(80,140,220,0.12);
+  --wire-2:    rgba(80,140,220,0.22);
+  --wire-3:    rgba(80,140,220,0.42);
+  --wire-4:    rgba(80,140,220,0.65);
+
+  /* Entity semantic colors */
+  --c-stage:    #5a9fd4;
+  --c-artifact: #48b896;
+  --c-norm:     #c9a84c;
+  --c-variant:  #9c71d8;
+  --c-role:     #d97c4a;
+  --c-status:   #5abec8;
+  --c-decision: #e8cc4a;
+  --c-rollback: #d85a5a;
+  --c-optional: #68aa68;
+  --c-activity: #7898d0;
+
+  /* Process variant colors */
+  --pv1: #5a9fd4;
+  --pv2: #d97c4a;
+  --pv3: #5abec8;
+  --pv4: #48b896;
+  --pv5: #d85a5a;
+
+  --tx-hi:  #e2eaf5;
+  --tx-mid: #7a9ab8;
+  --tx-lo:  #364d66;
+  --tx-acc: #a4c8ec;
+
+  --nav-w: 236px;
+  --hdr-h: 50px;
+  --r:     4px;
+  --r-lg:  8px;
+
+  --f-disp: 'Bebas Neue', sans-serif;
+  --f-mono: 'IBM Plex Mono', monospace;
+  --f-body: 'Literata', serif;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--f-body);background:var(--ink);color:var(--tx-hi);min-height:100vh;overflow-x:hidden}
+
+/* Grid texture */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    linear-gradient(rgba(80,140,220,.018) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(80,140,220,.018) 1px,transparent 1px);
+  background-size:48px 48px;
+}
+
+/* ── LAYOUT ── */
+.shell{display:flex;height:100vh;overflow:hidden;position:relative;z-index:1}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:var(--nav-w);background:var(--s0);
+  border-right:1px solid var(--wire-0);
+  display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;
+}
+.sidebar::-webkit-scrollbar{width:2px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--wire-1)}
+
+.brand{padding:16px 16px 12px;border-bottom:1px solid var(--wire-0)}
+.brand-logotype{font-family:var(--f-disp);font-size:20px;letter-spacing:.1em;color:var(--tx-hi);line-height:1}
+.brand-tagline{font-family:var(--f-mono);font-size:8px;color:var(--tx-lo);letter-spacing:.16em;text-transform:uppercase;margin-top:4px}
+.brand-tag{
+  display:inline-block;margin-top:7px;font-family:var(--f-mono);font-size:7.5px;
+  padding:2px 7px;border:1px solid var(--wire-2);border-radius:2px;
+  color:var(--c-stage);letter-spacing:.1em
+}
+
+.nav-sec{padding:10px 0 4px}
+.nav-sec-lbl{
+  font-family:var(--f-mono);font-size:7.5px;letter-spacing:.2em;color:var(--tx-lo);
+  text-transform:uppercase;padding:0 14px 6px;border-bottom:1px solid var(--wire-0);margin-bottom:3px
+}
+
+.nl{
+  display:flex;align-items:center;gap:9px;padding:7px 14px;cursor:pointer;
+  font-family:var(--f-mono);font-size:10.5px;color:var(--tx-mid);
+  border-left:2px solid transparent;transition:all .15s;letter-spacing:.02em;
+  text-decoration:none;
+}
+.nl:hover{background:var(--s2);color:var(--tx-hi);border-left-color:var(--wire-2)}
+.nl.on{background:rgba(90,159,212,.07);color:var(--c-stage);border-left-color:var(--c-stage)}
+.nl .dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.nl .badge{margin-left:auto;font-size:8px;background:var(--s3);color:var(--tx-lo);padding:1px 5px;border-radius:10px}
+.nl.on .badge{background:rgba(90,159,212,.15);color:var(--c-stage)}
+
+.sf{margin-top:auto;padding:10px 14px;border-top:1px solid var(--wire-0);font-family:var(--f-mono);font-size:8px;color:var(--tx-lo)}
+.live{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--c-optional);box-shadow:0 0 5px var(--c-optional);margin-right:4px;animation:blink 2.4s infinite}
+@keyframes blink{0%,100%{opacity:1}55%{opacity:.2}}
+
+/* ── MAIN ── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+.topbar{
+  height:var(--hdr-h);background:var(--s0);border-bottom:1px solid var(--wire-0);
+  display:flex;align-items:center;padding:0 22px;gap:12px;flex-shrink:0;
+}
+.tb-title{font-family:var(--f-disp);font-size:19px;letter-spacing:.07em;color:var(--tx-hi)}
+.tb-trail{font-family:var(--f-mono);font-size:8.5px;color:var(--tx-lo)}
+.tb-trail b{color:var(--c-stage);font-weight:400}
+.tb-pills{margin-left:auto;display:flex;gap:5px}
+.pill{font-family:var(--f-mono);font-size:8px;padding:2px 7px;border:1px solid var(--wire-1);border-radius:2px;color:var(--tx-lo);letter-spacing:.08em;text-transform:uppercase}
+.pill.hi{border-color:var(--c-stage);color:var(--c-stage);background:rgba(90,159,212,.06)}
+
+.canvas{flex:1;overflow-y:auto;overflow-x:hidden;padding:24px}
+.canvas::-webkit-scrollbar{width:3px}
+.canvas::-webkit-scrollbar-thumb{background:var(--wire-1)}
+
+/* ── VIEWS ── */
+.view{display:none;animation:appear .25s ease}
+.view.on{display:block}
+@keyframes appear{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── TYPOGRAPHY ── */
+.sec-row{display:flex;align-items:flex-end;gap:12px;margin-bottom:20px}
+.sec-hed{font-family:var(--f-disp);font-size:26px;letter-spacing:.08em;color:var(--tx-hi);line-height:1}
+.sec-meta{font-family:var(--f-mono);font-size:9px;color:var(--tx-lo);letter-spacing:.1em;margin-bottom:3px}
+.sec-div{flex:1;height:1px;background:var(--wire-0);margin-bottom:4px}
+
+/* ── ENTITY CHIPS ── */
+.chip{
+  display:inline-flex;align-items:center;gap:3px;
+  font-family:var(--f-mono);font-size:8.5px;letter-spacing:.07em;
+  padding:2px 7px 2px 5px;border-radius:2px;border:1px solid;
+  cursor:pointer;transition:all .14s;white-space:nowrap;
+}
+.chip::before{content:'';width:4px;height:4px;border-radius:50%;background:currentColor;flex-shrink:0}
+.chip:hover{filter:brightness(1.25);transform:translateY(-1px)}
+
+.ch-stage    {color:var(--c-stage);   border-color:rgba(90,159,212,.28); background:rgba(90,159,212,.05)}
+.ch-artifact {color:var(--c-artifact);border-color:rgba(72,184,150,.28); background:rgba(72,184,150,.05)}
+.ch-norm     {color:var(--c-norm);    border-color:rgba(201,168,76,.28); background:rgba(201,168,76,.05)}
+.ch-variant  {color:var(--c-variant); border-color:rgba(156,113,216,.28);background:rgba(156,113,216,.05)}
+.ch-role     {color:var(--c-role);    border-color:rgba(217,124,74,.28); background:rgba(217,124,74,.05)}
+.ch-status   {color:var(--c-status);  border-color:rgba(90,190,200,.28); background:rgba(90,190,200,.05)}
+.ch-decision {color:var(--c-decision);border-color:rgba(232,204,74,.28); background:rgba(232,204,74,.05)}
+.ch-risk     {color:var(--c-rollback);border-color:rgba(216,90,90,.28);  background:rgba(216,90,90,.05)}
+.ch-optional {color:var(--c-optional);border-color:rgba(104,170,104,.28);background:rgba(104,170,104,.05)}
+
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+
+/* ── CARDS ── */
+.card{background:var(--s1);border:1px solid var(--wire-0);border-radius:var(--r-lg);transition:border-color .18s}
+.card:hover{border-color:var(--wire-1)}
+.ch{padding:14px 16px 0;border-bottom:1px solid var(--wire-0);display:flex;align-items:center;gap:9px}
+.ch-title{font-family:var(--f-mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--tx-mid);padding-bottom:12px}
+.cb{padding:14px 16px}
+
+/* ── STATS BAND ── */
+.stats-band{
+  display:grid;grid-template-columns:repeat(8,1fr);gap:1px;
+  background:var(--wire-0);border:1px solid var(--wire-0);border-radius:var(--r-lg);overflow:hidden;margin-bottom:22px;
+}
+.sc{background:var(--s1);padding:14px 12px;cursor:pointer;transition:background .14s;position:relative;overflow:hidden}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--sc-c,var(--c-stage));opacity:.45;transition:opacity .15s}
+.sc:hover{background:var(--s2)}.sc:hover::before{opacity:1}
+.sc-n{font-family:var(--f-disp);font-size:26px;letter-spacing:.04em;color:var(--tx-hi);line-height:1}
+.sc-lbl{font-family:var(--f-mono);font-size:8.5px;color:var(--tx-lo);letter-spacing:.1em;text-transform:uppercase;margin-top:4px}
+.sc-t{font-family:var(--f-mono);font-size:7.5px;color:var(--sc-c,var(--c-stage));margin-top:2px;letter-spacing:.07em}
+
+/* ── OVERVIEW CONCEPT GRID ── */
+.ov-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px}
+.ov-card{
+  background:var(--s1);border:1px solid var(--wire-0);border-radius:var(--r-lg);
+  padding:14px;cursor:pointer;transition:all .18s;position:relative;overflow:hidden;
+}
+.ov-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--oc-c)}
+.ov-card:hover{border-color:var(--wire-2);background:var(--s2);transform:translateX(3px)}
+.ov-icon{font-size:18px;margin-bottom:7px}
+.ov-n{font-family:var(--f-disp);font-size:24px;letter-spacing:.04em;color:var(--tx-hi);margin-bottom:1px}
+.ov-lbl{font-family:var(--f-mono);font-size:8.5px;color:var(--tx-lo);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
+.ov-desc{font-size:11px;color:var(--tx-mid);line-height:1.5}
+.ov-trail{font-family:var(--f-mono);font-size:7.5px;color:var(--oc-c);margin-top:7px;letter-spacing:.07em}
+
+/* ── LEGEND ROW ── */
+.legend-row{
+  display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px;
+  background:var(--s2);border-radius:var(--r);margin-bottom:20px;
+}
+.leg-item{display:flex;align-items:center;gap:4px;font-family:var(--f-mono);font-size:8.5px;color:var(--tx-mid)}
+.leg-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* ── LC GRAPH ── */
+.lc-wrap{background:var(--s1);border:1px solid var(--wire-0);border-radius:var(--r-lg);padding:22px 18px;margin-bottom:20px;overflow-x:auto}
+.lc-graph{display:flex;align-items:flex-start;min-width:920px;gap:0;position:relative}
+
+.lc-node{flex:1;min-width:82px;position:relative;cursor:pointer}
+.lc-ni{
+  margin:0 3px;padding:11px 7px;background:var(--s2);
+  border:1px solid var(--wire-0);border-radius:var(--r);
+  text-align:center;transition:all .2s;position:relative;overflow:hidden;
+}
+.lc-ni::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--nc);border-radius:var(--r) var(--r) 0 0;opacity:.6;transition:opacity .2s}
+.lc-node:hover .lc-ni,.lc-node.on .lc-ni{background:var(--s3);border-color:var(--nc)}
+.lc-node.on .lc-ni::before,.lc-node:hover .lc-ni::before{opacity:1}
+.lc-ni-id{font-family:var(--f-mono);font-size:7.5px;color:var(--nc);letter-spacing:.12em;margin-bottom:4px}
+.lc-ni-ico{font-size:16px;margin-bottom:4px}
+.lc-ni-name{font-family:var(--f-mono);font-size:8.5px;color:var(--tx-mid);line-height:1.3}
+.lc-node.on .lc-ni-name{color:var(--tx-hi)}
+.lc-ni-sla{font-family:var(--f-mono);font-size:7px;color:var(--tx-lo);margin-top:4px}
+.lc-ni-badges{margin-top:5px;display:flex;justify-content:center;gap:3px;flex-wrap:wrap}
+.lc-ni-badge{font-family:var(--f-mono);font-size:6.5px;padding:1px 4px;border-radius:2px}
+.badge-decision{background:rgba(232,204,74,.12);color:var(--c-decision)}
+.badge-rollback{background:rgba(216,90,90,.12);color:var(--c-rollback)}
+.badge-optional{background:rgba(104,170,104,.12);color:var(--c-optional)}
+
+/* Connector */
+.lc-conn{display:flex;align-items:center;padding-top:34px;flex-shrink:0;width:18px}
+.lc-conn-line{width:100%;height:1px;background:var(--wire-1);position:relative}
+.lc-conn-line::after{content:'▶';position:absolute;right:-7px;top:-5px;font-size:7px;color:var(--tx-lo)}
+
+/* Variant coverage bars */
+.lc-vbars{display:flex;min-width:920px;margin-top:10px}
+.lc-vbar-cell{flex:1;margin:0 3px}
+.lc-vbar{height:3px;border-radius:2px;margin-bottom:1px;transition:opacity .2s}
+.lc-vbar.on{opacity:.9}.lc-vbar.off{opacity:.08}
+.lc-conn-sp{width:18px;flex-shrink:0}
+
+/* Rollback arc labels */
+.lc-rollback-hint{
+  font-family:var(--f-mono);font-size:7.5px;color:var(--c-rollback);
+  text-align:center;margin-top:3px;opacity:.7;
+}
+
+/* ── STAGE DETAIL PANEL (SDP) ── */
+.sdp{background:var(--s1);border:1px solid var(--wire-2);border-radius:var(--r-lg);overflow:hidden;animation:appear .2s ease;margin-bottom:20px}
+.sdp-bar{height:4px;background:var(--sdpc)}
+.sdp-hdr{padding:18px 20px;border-bottom:1px solid var(--wire-0)}
+.sdp-id{font-family:var(--f-mono);font-size:8.5px;letter-spacing:.15em;color:var(--sdpc);margin-bottom:5px}
+.sdp-name{font-family:var(--f-disp);font-size:22px;letter-spacing:.07em;color:var(--tx-hi);margin-bottom:7px}
+.sdp-purpose{font-size:13px;color:var(--tx-mid);line-height:1.65;max-width:700px;font-style:italic}
+.sdp-meta{display:flex;align-items:center;gap:6px;padding:9px 20px;border-bottom:1px solid var(--wire-0);background:var(--s2);flex-wrap:wrap}
+.sdp-body{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--wire-0)}
+.sdp-sec{background:var(--s1);padding:14px 16px}
+.sdp-sec.w2{grid-column:span 2}.sdp-sec.w3{grid-column:span 3}
+.sdp-sec-t{font-family:var(--f-mono);font-size:7.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--tx-lo);margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--wire-0)}
+.sdp-text{font-size:12px;color:var(--tx-mid);line-height:1.6}
+
+/* Decision point block */
+.dp-block{background:rgba(232,204,74,.04);border:1px solid rgba(232,204,74,.18);border-radius:var(--r);padding:10px 12px;margin-bottom:7px}
+.dp-hdr{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.dp-ico{font-size:14px}
+.dp-title{font-family:var(--f-mono);font-size:9.5px;color:var(--c-decision);letter-spacing:.06em}
+.dp-desc{font-size:11.5px;color:var(--tx-mid);line-height:1.5;margin-bottom:7px}
+.dp-outcomes{display:flex;flex-wrap:wrap;gap:4px}
+
+/* Rollback block */
+.rb-block{background:rgba(216,90,90,.04);border:1px solid rgba(216,90,90,.16);border-radius:var(--r);padding:9px 12px;margin-bottom:7px;display:flex;gap:9px;align-items:flex-start}
+.rb-ico{color:var(--c-rollback);font-size:12px;flex-shrink:0;padding-top:2px}
+.rb-from{font-family:var(--f-mono);font-size:8.5px;color:var(--c-rollback);letter-spacing:.08em;margin-bottom:2px}
+.rb-reason{font-size:11.5px;color:var(--tx-mid);line-height:1.45}
+
+/* Optional path block */
+.op-block{background:rgba(104,170,104,.04);border:1px solid rgba(104,170,104,.15);border-radius:var(--r);padding:8px 12px;margin-bottom:6px;font-size:11.5px;color:var(--tx-mid)}
+.op-label{font-family:var(--f-mono);font-size:8px;color:var(--c-optional);margin-bottom:2px;letter-spacing:.08em}
+
+/* Artifact flow row */
+.art-flow{display:flex;flex-direction:column;gap:8px}
+.art-flow-row{display:flex;align-items:flex-start;gap:10px}
+.art-flow-box{
+  background:var(--s2);border:1px solid var(--wire-1);border-radius:var(--r);
+  padding:9px 12px;cursor:pointer;transition:all .15s;flex:1;
+}
+.art-flow-box:hover{border-color:rgba(72,184,150,.45);background:var(--s3)}
+.art-flow-box.in{border-left:2px solid var(--c-stage)}
+.art-flow-box.out{border-left:2px solid var(--c-artifact)}
+.art-flow-box.gen{border-left:2px solid var(--c-decision)}
+.af-id{font-family:var(--f-mono);font-size:7.5px;color:var(--c-artifact);letter-spacing:.1em;margin-bottom:2px}
+.af-name{font-family:var(--f-mono);font-size:10.5px;color:var(--tx-hi);margin-bottom:3px}
+.af-meta{font-size:10.5px;color:var(--tx-lo)}
+.art-flow-arrow{font-size:10px;color:var(--tx-lo);flex-shrink:0;padding-top:12px}
+.art-flow-dir{font-family:var(--f-mono);font-size:7.5px;color:var(--tx-lo);letter-spacing:.08em;margin-bottom:3px}
+
+/* ── ARTIFACT DETAIL ── */
+.ard{background:var(--s1);border:1px solid rgba(72,184,150,.3);border-radius:var(--r-lg);overflow:hidden;animation:appear .2s;margin-bottom:18px}
+.ard-bar{height:3px;background:var(--c-artifact)}
+.ard-hdr{padding:18px 20px;border-bottom:1px solid var(--wire-0)}
+.ard-id{font-family:var(--f-mono);font-size:8.5px;color:var(--c-artifact);letter-spacing:.14em;margin-bottom:4px}
+.ard-name{font-family:var(--f-disp);font-size:21px;letter-spacing:.06em;color:var(--tx-hi)}
+.ard-purpose{font-size:13px;color:var(--tx-mid);margin-top:7px;font-style:italic;line-height:1.6}
+.ard-body{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--wire-0)}
+.ard-sec{background:var(--s1);padding:13px 15px}
+.ard-sec.w2{grid-column:span 2}.ard-sec.w3{grid-column:span 3}
+.ard-sec-t{font-family:var(--f-mono);font-size:7.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--tx-lo);margin-bottom:7px;padding-bottom:4px;border-bottom:1px solid var(--wire-0)}
+.ard-val{font-size:12px;color:var(--tx-mid);line-height:1.55}
+
+/* Lineage strip */
+.lineage{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:8px 0}
+.lin-box{
+  flex-shrink:0;background:var(--s2);border:1px solid var(--wire-1);border-radius:3px;
+  padding:7px 10px;font-family:var(--f-mono);font-size:8.5px;color:var(--tx-mid);
+  cursor:pointer;transition:all .14s;text-align:center;min-width:80px;
+}
+.lin-box.cur{border-color:var(--c-artifact);color:var(--c-artifact);background:rgba(72,184,150,.07)}
+.lin-box:hover{border-color:var(--wire-3);color:var(--tx-hi)}
+.lin-box-sub{font-size:7px;color:var(--tx-lo);margin-top:2px;line-height:1.3}
+.lin-arrow{font-size:11px;color:var(--tx-lo);flex-shrink:0}
+
+/* ── PROCESS VARIANTS ── */
+.pv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
+
+.pv-card{
+  background:var(--s1);border:1px solid var(--wire-0);border-radius:var(--r-lg);
+  overflow:hidden;cursor:pointer;transition:all .18s;
+}
+.pv-card-topbar{height:3px;background:var(--pvc)}
+.pv-card:hover,.pv-card.on{border-color:var(--pvc);background:var(--s2)}
+.pv-card-body{padding:14px 15px}
+.pv-card-id{font-family:var(--f-mono);font-size:8.5px;letter-spacing:.12em;color:var(--pvc);margin-bottom:5px}
+.pv-card-name{font-family:var(--f-disp);font-size:15px;letter-spacing:.05em;color:var(--tx-hi);margin-bottom:5px}
+.pv-card-desc{font-size:11px;color:var(--tx-lo);line-height:1.5;margin-bottom:11px}
+
+/* Route visual */
+.pv-route{display:flex;flex-wrap:wrap;gap:3px;align-items:center}
+.rs{font-family:var(--f-mono);font-size:8px;padding:2px 6px;border-radius:2px;letter-spacing:.05em}
+.rs.norm{background:var(--s3);color:var(--tx-mid);border:1px solid var(--wire-0)}
+.rs.skip{background:rgba(216,90,90,.07);color:var(--c-rollback);border:1px dashed rgba(216,90,90,.28);text-decoration:line-through}
+.rs.opt{background:rgba(104,170,104,.07);color:var(--c-optional);border:1px dashed rgba(104,170,104,.25)}
+.rs.para{background:rgba(232,204,74,.07);color:var(--c-decision);border:1px dashed rgba(232,204,74,.25)}
+.rs.fast{background:rgba(156,113,216,.07);color:var(--c-variant);border:1px solid rgba(156,113,216,.28)}
+.pv-rarrow{font-size:7.5px;color:var(--tx-lo)}
+
+/* PV Detail */
+.pvd{background:var(--s1);border-radius:var(--r-lg);overflow:hidden;animation:appear .2s;margin-bottom:18px}
+.pvd-bar{height:4px;background:var(--pvdc)}
+.pvd-hdr{padding:16px 18px;border-bottom:1px solid var(--wire-0);background:var(--s2)}
+.pvd-id{font-family:var(--f-mono);font-size:8.5px;letter-spacing:.12em;color:var(--pvdc);margin-bottom:3px}
+.pvd-name{font-family:var(--f-disp);font-size:20px;letter-spacing:.06em;color:var(--tx-hi);margin-bottom:5px}
+.pvd-desc{font-size:13px;color:var(--tx-mid);line-height:1.6}
+.pvd-body{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--wire-0)}
+.pvd-sec{background:var(--s1);padding:13px 15px}
+.pvd-sec.w2{grid-column:span 2}.pvd-sec.w3{grid-column:span 3}
+.pvd-sec-t{font-family:var(--f-mono);font-size:7.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--tx-lo);margin-bottom:7px;padding-bottom:4px;border-bottom:1px solid var(--wire-0)}
+
+/* Comparison table */
+.cmp-t{width:100%;border-collapse:collapse}
+.cmp-t th{font-family:var(--f-mono);font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--tx-lo);text-align:left;padding:9px 11px;border-bottom:1px solid var(--wire-1);background:var(--s2)}
+.cmp-t td{padding:9px 11px;border-bottom:1px solid var(--wire-0);font-size:11px;color:var(--tx-mid);vertical-align:top}
+.cmp-t tr:hover td{background:var(--s2);color:var(--tx-hi)}
+.cmp-t tr:last-child td{border-bottom:none}
+
+/* ── NORMATIVE ── */
+.norm-t{width:100%;border-collapse:collapse}
+.norm-t th{font-family:var(--f-mono);font-size:7.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--tx-lo);text-align:left;padding:8px 11px;border-bottom:1px solid var(--wire-1);background:var(--s2);white-space:nowrap}
+.norm-t td{padding:8px 11px;border-bottom:1px solid var(--wire-0);font-size:11px;color:var(--tx-mid);vertical-align:top}
+.norm-t tr:hover td{background:var(--s2);color:var(--tx-hi);cursor:pointer}
+.norm-t tr:last-child td{border-bottom:none}
+
+.ntag{font-family:var(--f-mono);font-size:7.5px;padding:2px 6px;border-radius:2px;text-transform:uppercase;white-space:nowrap}
+.nt-закон{background:rgba(90,159,212,.12);color:var(--c-stage)}
+.nt-постанова{background:rgba(156,113,216,.12);color:var(--c-variant)}
+.nt-наказ{background:rgba(72,184,150,.12);color:var(--c-artifact)}
+.nt-дсту{background:rgba(201,168,76,.12);color:var(--c-norm)}
+.nt-нато{background:rgba(90,190,200,.12);color:var(--c-status)}
+
+/* Filter row */
+.frow{display:flex;align-items:center;gap:7px;margin-bottom:14px;flex-wrap:wrap}
+.flbl{font-family:var(--f-mono);font-size:8.5px;color:var(--tx-lo);letter-spacing:.1em;flex-shrink:0}
+.fb{font-family:var(--f-mono);font-size:9px;padding:3px 9px;border:1px solid var(--wire-1);border-radius:2px;background:transparent;color:var(--tx-mid);cursor:pointer;transition:all .13s;letter-spacing:.04em}
+.fb:hover{border-color:var(--wire-3);color:var(--tx-hi)}
+.fb.on{border-color:var(--c-stage);color:var(--c-stage);background:rgba(90,159,212,.07)}
+
+/* ── STATUS MACHINE ── */
+.sm-layout{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.sm-flow{display:flex;flex-direction:column;gap:7px}
+.sm-node{
+  display:flex;align-items:flex-start;gap:11px;cursor:pointer;padding:7px;
+  border-radius:var(--r);border:1px solid transparent;transition:all .14s;
+}
+.sm-node:hover,.sm-node.on{background:var(--s2);border-color:var(--wire-1)}
+.sm-vis{display:flex;flex-direction:column;align-items:center;width:22px;flex-shrink:0}
+.sm-dot{
+  width:22px;height:22px;border-radius:50%;border:1.5px solid var(--snc,var(--wire-1));
+  background:var(--s1);display:flex;align-items:center;justify-content:center;
+  font-family:var(--f-mono);font-size:7.5px;color:var(--snc,var(--tx-lo));
+  transition:all .14s;flex-shrink:0;
+}
+.sm-node:hover .sm-dot,.sm-node.on .sm-dot{background:var(--snc);color:white;box-shadow:0 0 8px var(--snc)}
+.sm-line{width:1px;height:13px;background:var(--wire-0);margin:2px 0}
+.sm-body{flex:1;padding-bottom:3px}
+.sm-name{font-family:var(--f-mono);font-size:10.5px;color:var(--tx-hi);margin-bottom:2px}
+.sm-desc{font-size:10.5px;color:var(--tx-lo);line-height:1.4;margin-bottom:4px}
+.sm-trans{display:flex;flex-wrap:wrap;gap:3px}
+.sm-tran{font-family:var(--f-mono);font-size:7.5px;padding:1px 6px;border:1px solid var(--wire-0);border-radius:2px;color:var(--tx-lo);cursor:pointer}
+.sm-tran:hover{border-color:var(--c-stage);color:var(--c-stage)}
+.sm-detail{background:var(--s1);border:1px solid var(--wire-2);border-radius:var(--r-lg);padding:18px;animation:appear .2s}
+
+/* ── DOCUMENT LIFECYCLE EXPLORER ── */
+.dle-layout{display:grid;grid-template-columns:240px 1fr;gap:16px}
+.dle-nav-card{background:var(--s1);border:1px solid var(--wire-0);border-radius:var(--r-lg);overflow:hidden}
+.dle-nitem{
+  padding:9px 14px;cursor:pointer;font-family:var(--f-mono);font-size:10.5px;
+  color:var(--tx-mid);border-left:2px solid transparent;transition:all .14s;
+  border-bottom:1px solid var(--wire-0);
+}
+.dle-nitem:last-child{border-bottom:none}
+.dle-nitem:hover{background:var(--s2);color:var(--tx-hi)}
+.dle-nitem.on{background:rgba(72,184,150,.06);border-left-color:var(--c-artifact);color:var(--c-artifact)}
+
+.dle-flow-card{background:var(--s1);border:1px solid var(--wire-0);border-radius:var(--r-lg);overflow:hidden}
+.dle-fhdr{padding:14px 18px;border-bottom:1px solid var(--wire-0);background:var(--s2);display:flex;align-items:center;gap:10px}
+.dle-ftitle{font-family:var(--f-disp);font-size:16px;letter-spacing:.05em;color:var(--tx-hi)}
+.dle-fbody{padding:18px}
+
+/* Document chain */
+.doc-chain{display:flex;flex-direction:column;gap:8px}
+.dc-row{
+  display:flex;align-items:flex-start;gap:11px;padding:11px 13px;
+  background:var(--s2);border:1px solid var(--wire-0);border-radius:var(--r);
+  cursor:pointer;transition:all .14s;position:relative;
+}
+.dc-row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--dcc,var(--c-artifact));opacity:.5;border-radius:var(--r) 0 0 var(--r)}
+.dc-row:hover{border-color:var(--wire-2);background:var(--s3)}.dc-row:hover::before{opacity:1}
+.dc-num{font-family:var(--f-disp);font-size:20px;color:var(--tx-lo);width:24px;flex-shrink:0;line-height:1;padding-top:2px}
+.dc-body{flex:1}
+.dc-id{font-family:var(--f-mono);font-size:7.5px;color:var(--c-artifact);letter-spacing:.12em;margin-bottom:2px}
+.dc-name{font-family:var(--f-mono);font-size:11px;font-weight:500;color:var(--tx-hi);margin-bottom:4px}
+.dc-info{font-size:11px;color:var(--tx-lo);margin-bottom:5px}
+.dc-roles{display:flex;flex-wrap:wrap;gap:4px}
+.dc-conn{padding-left:46px;display:flex;align-items:center;gap:5px;margin:-3px 0}
+.dc-conn-vl{height:16px;width:1px;background:var(--wire-1)}
+.dc-conn-lbl{font-family:var(--f-mono);font-size:7px;color:var(--tx-lo)}
+
+/* Skipped doc */
+.dc-row.skipped{opacity:.35;pointer-events:none}
+.dc-row.skipped::after{content:'✗ ПРОПУЩЕНО В ЦЬОМУ ВАРІАНТІ';position:absolute;right:12px;top:50%;transform:translateY(-50%);font-family:var(--f-mono);font-size:8px;color:var(--c-rollback);letter-spacing:.08em}
+
+/* ── OVT TYPES ── */
+.ovt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+.ovt-card{
+  background:var(--s1);border:1px solid var(--wire-0);border-radius:var(--r-lg);
+  padding:14px;cursor:pointer;transition:all .18s;position:relative;overflow:hidden;
+}
+.ovt-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--ovtc);transform:scaleX(0);transition:transform .2s}
+.ovt-card:hover::after,.ovt-card.on::after{transform:scaleX(1)}
+.ovt-card:hover,.ovt-card.on{border-color:var(--wire-2);background:var(--s2)}
+.ovt-ico{font-size:20px;margin-bottom:7px}
+.ovt-name{font-family:var(--f-mono);font-size:11px;color:var(--tx-hi);margin-bottom:3px;line-height:1.3}
+.ovt-cat{font-family:var(--f-mono);font-size:8px;color:var(--tx-lo);margin-bottom:7px}
+
+/* ── ROLES ── */
+.roles-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+.role-card{background:var(--s1);border:1px solid var(--wire-0);border-radius:var(--r-lg);padding:14px;cursor:pointer;transition:all .18s}
+.role-card:hover{border-color:rgba(217,124,74,.3);background:var(--s2)}
+.role-id{font-family:var(--f-mono);font-size:8px;color:var(--c-role);margin-bottom:5px;letter-spacing:.1em}
+.role-name{font-family:var(--f-mono);font-size:11.5px;color:var(--tx-hi);margin-bottom:3px}
+.role-org{font-size:10.5px;color:var(--tx-lo);margin-bottom:8px}
+.raci{font-family:var(--f-mono);font-size:8.5px;padding:2px 8px;border-radius:2px;display:inline-block;margin-bottom:7px}
+.rR{background:rgba(216,90,90,.1);color:var(--c-rollback)}
+.rA{background:rgba(232,204,74,.1);color:var(--c-decision)}
+.rC{background:rgba(72,184,150,.1);color:var(--c-artifact)}
+.rI{background:rgba(90,159,212,.1);color:var(--c-stage)}
+
+/* ── MISC ── */
+.divider{height:1px;background:var(--wire-0);margin:14px 0}
+.empty{font-family:var(--f-mono);font-size:10.5px;color:var(--tx-lo);text-align:center;padding:28px 0;letter-spacing:.08em}
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-thumb{background:var(--wire-1);border-radius:3px}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ═══════ SIDEBAR ═══════ -->
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-logotype">ОВТ LIFECYCLE</div>
+    <div class="brand-tagline">Semantic Knowledge Platform</div>
+    <div class="brand-tag">МОУ · SEMANTIC v3.0</div>
+  </div>
+
+  <div class="nav-sec">
+    <div class="nav-sec-lbl">Огляд</div>
+    <div class="nl on" onclick="go('overview')"><div class="dot" style="background:var(--c-stage)"></div>Lifecycle Overview</div>
+  </div>
+  <div class="nav-sec">
+    <div class="nav-sec-lbl">Lifecycle Model</div>
+    <div class="nl" onclick="go('stages')"><div class="dot" style="background:var(--c-stage)"></div>Lifecycle Stages<span class="badge">10</span></div>
+    <div class="nl" onclick="go('variants')"><div class="dot" style="background:var(--c-variant)"></div>Process Variants<span class="badge">5</span></div>
+    <div class="nl" onclick="go('statuses')"><div class="dot" style="background:var(--c-status)"></div>Status Machine<span class="badge">14</span></div>
+  </div>
+  <div class="nav-sec">
+    <div class="nav-sec-lbl">Документи</div>
+    <div class="nl" onclick="go('artifacts')"><div class="dot" style="background:var(--c-artifact)"></div>Артефакти / Документи<span class="badge">11</span></div>
+    <div class="nl" onclick="go('docexplorer')"><div class="dot" style="background:var(--c-artifact)"></div>Document Lifecycle Explorer</div>
+  </div>
+  <div class="nav-sec">
+    <div class="nav-sec-lbl">Нормативна база</div>
+    <div class="nl" onclick="go('normative')"><div class="dot" style="background:var(--c-norm)"></div>Нормативна База<span class="badge">31</span></div>
+  </div>
+  <div class="nav-sec">
+    <div class="nav-sec-lbl">Класифікатори</div>
+    <div class="nl" onclick="go('ovt')"><div class="dot" style="background:var(--c-status)"></div>Типи ОВТ<span class="badge">11</span></div>
+    <div class="nl" onclick="go('roles')"><div class="dot" style="background:var(--c-role)"></div>Ролі та RACI<span class="badge">14</span></div>
+  </div>
+
+  <div class="sf"><span class="live"></span>DEMO DATA · SEMANTIC v3</div>
+</aside>
+
+<!-- ═══════ MAIN ═══════ -->
+<div class="main">
+  <div class="topbar">
+    <div>
+      <div class="tb-title" id="tb-title">Lifecycle Overview</div>
+      <div class="tb-trail">МОУ › ОВТ Lifecycle Platform › <b id="tb-trail">Overview</b></div>
+    </div>
+    <div class="tb-pills">
+      <div class="pill hi">SEMANTIC KNOWLEDGE PLATFORM</div>
+      <div class="pill">v3.0</div>
+    </div>
+  </div>
+
+  <div class="canvas">
+
+    <!-- ═══ VIEW: OVERVIEW ═══ -->
+    <div class="view on" id="v-overview">
+      <div class="sec-row">
+        <div class="sec-hed">ОВТ LIFECYCLE — KNOWLEDGE ARCHITECTURE</div>
+        <div class="sec-div"></div>
+        <div class="sec-meta">SEMANTIC MODEL · МОУ</div>
+      </div>
+
+      <div class="stats-band">
+        <div class="sc" style="--sc-c:var(--c-stage)" onclick="go('stages')"><div class="sc-n">10</div><div class="sc-lbl">Lifecycle Stages</div><div class="sc-t">S01 — S10</div></div>
+        <div class="sc" style="--sc-c:var(--c-variant)" onclick="go('variants')"><div class="sc-n">5</div><div class="sc-lbl">Process Variants</div><div class="sc-t">PV-01 — PV-05</div></div>
+        <div class="sc" style="--sc-c:var(--c-artifact)" onclick="go('artifacts')"><div class="sc-n">11</div><div class="sc-lbl">Артефактів</div><div class="sc-t">ART-001 — ART-011</div></div>
+        <div class="sc" style="--sc-c:var(--c-norm)" onclick="go('normative')"><div class="sc-n">31</div><div class="sc-lbl">Норм. Актів</div><div class="sc-t">Закони · КМУ · ДСТУ · НАТО</div></div>
+        <div class="sc" style="--sc-c:var(--c-status)" onclick="go('statuses')"><div class="sc-n">14</div><div class="sc-lbl">Статусів</div><div class="sc-t">State Machine</div></div>
+        <div class="sc" style="--sc-c:var(--c-role)" onclick="go('roles')"><div class="sc-n">14</div><div class="sc-lbl">Ролей / RACI</div><div class="sc-t">R-01 — R-14</div></div>
+        <div class="sc" style="--sc-c:var(--c-decision)"><div class="sc-n">15</div><div class="sc-lbl">Активностей</div><div class="sc-t">ACT-001 — ACT-015</div></div>
+        <div class="sc" style="--sc-c:var(--c-status)" onclick="go('ovt')"><div class="sc-n">11</div><div class="sc-lbl">Типів ОВТ</div><div class="sc-t">OVT-01 — OVT-11</div></div>
+      </div>
+
+      <!-- Entity concepts -->
+      <div class="ov-grid">
+        <div class="ov-card" style="--oc-c:var(--c-stage)" onclick="go('stages')">
+          <div class="ov-icon">⟶</div><div class="ov-n">Stage</div>
+          <div class="ov-lbl">Lifecycle Stage</div>
+          <div class="ov-desc">Верхньорівневий етап ЖЦ ОВТ із trigger, decision points, rollback paths та артефактами. Не є strictly linear.</div>
+          <div class="ov-trail">↗ 10 stages · S01–S10</div>
+        </div>
+        <div class="ov-card" style="--oc-c:var(--c-variant)" onclick="go('variants')">
+          <div class="ov-icon">⑂</div><div class="ov-n">Variant</div>
+          <div class="ov-lbl">Process Variant</div>
+          <div class="ov-desc">Визначає маршрут: які stages mandatory, skipped, optional або parallel. 5 різних routes через lifecycle.</div>
+          <div class="ov-trail">↗ 5 variants · PV-01–PV-05</div>
+        </div>
+        <div class="ov-card" style="--oc-c:var(--c-artifact)" onclick="go('artifacts')">
+          <div class="ov-icon">📄</div><div class="ov-n">Artifact</div>
+          <div class="ov-lbl">Документ / Артефакт</div>
+          <div class="ov-desc">Документ із повним RACI: хто ініціює → готує → погоджує → підписує → кому передає → що породжує.</div>
+          <div class="ov-trail">↗ 11 artifacts · ART-001–011</div>
+        </div>
+        <div class="ov-card" style="--oc-c:var(--c-norm)" onclick="go('normative')">
+          <div class="ov-icon">§</div><div class="ov-n">Norm</div>
+          <div class="ov-lbl">Нормативна Підстава</div>
+          <div class="ov-desc">Закони, постанови КМУ, накази МОУ, ДСТУ В та стандарти НАТО, що регулюють кожен stage і variant.</div>
+          <div class="ov-trail">↗ 31 документи · NB-01–NB-31</div>
+        </div>
+        <div class="ov-card" style="--oc-c:var(--c-decision)" onclick="go('stages')">
+          <div class="ov-icon">◆</div><div class="ov-n">Decision</div>
+          <div class="ov-lbl">Decision Point</div>
+          <div class="ov-desc">Точка розгалуження: продовження → rollback → скасування. Кожен critical stage має ≥1 decision point.</div>
+          <div class="ov-trail">↗ Детальніше: Lifecycle Stages</div>
+        </div>
+        <div class="ov-card" style="--oc-c:var(--c-rollback)" onclick="go('stages')">
+          <div class="ov-icon">↩</div><div class="ov-n">Rollback</div>
+          <div class="ov-lbl">Шлях Повернення</div>
+          <div class="ov-desc">Lifecycle loops: S04→S03, S03→S02 при негативних результатах. Показує нелінійну природу процесу.</div>
+          <div class="ov-trail">↗ S04→S03, S03→S02, тощо</div>
+        </div>
+        <div class="ov-card" style="--oc-c:var(--c-role)" onclick="go('roles')">
+          <div class="ov-icon">👤</div><div class="ov-n">Role</div>
+          <div class="ov-lbl">Роль / RACI</div>
+          <div class="ov-desc">14 ролей з RACI-матрицею: Responsible → Accountable → Consulted → Informed. Ownership кожного stage.</div>
+          <div class="ov-trail">↗ 14 ролей · RACI матриця</div>
+        </div>
+        <div class="ov-card" style="--oc-c:var(--c-status)" onclick="go('statuses')">
+          <div class="ov-icon">◉</div><div class="ov-n">Status</div>
+          <div class="ov-lbl">Стан ОВТ</div>
+          <div class="ov-desc">State machine: 14 станів від ідентифікації потреби до списання. Кожен перехід — через artifact-тригер.</div>
+          <div class="ov-trail">↗ 14 states · ST-00–ST-13</div>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div class="legend-row">
+        <div class="leg-item"><div class="leg-dot" style="background:var(--c-stage)"></div>Stage</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--c-variant)"></div>Variant</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--c-artifact)"></div>Artifact</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--c-norm)"></div>Regulation</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--c-role)"></div>Role</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--c-status)"></div>Status</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--c-decision)"></div>Decision Point</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--c-rollback)"></div>Rollback Path</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--c-optional)"></div>Optional / Conditional</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--c-activity)"></div>Activity</div>
+      </div>
+
+      <!-- Non-linear note -->
+      <div style="background:rgba(232,204,74,.04);border:1px solid rgba(232,204,74,.18);border-radius:var(--r-lg);padding:14px 18px;font-size:12.5px;color:var(--tx-mid);line-height:1.65">
+        <div style="font-family:var(--f-mono);font-size:8.5px;color:var(--c-decision);letter-spacing:.1em;margin-bottom:6px">◆ ВАЖЛИВО — НЕЛІНІЙНА ПРИРОДА ПРОЦЕСУ</div>
+        Lifecycle ОВТ <em>не є строго лінійним</em>. Існують <span style="color:var(--c-rollback)">rollback paths</span> (повернення на доопрацювання),
+        <span style="color:var(--c-optional)">optional flows</span> (необов'язкові etапи), <span style="color:var(--c-decision)">decision points</span> (розгалуження),
+        <span style="color:var(--c-variant)">variant-dependent routes</span> (різні маршрути залежно від типу ОВТ та умов).
+        PV-02 пропускає S06; PV-03 пропускає S02 та S03; PV-05 виконує S03 і S04 паралельно.
+        Модернізація (PV-04) стартує з S09 і повертається до S04.
+      </div>
+    </div><!-- /v-overview -->
+
+    <!-- ═══ VIEW: STAGES ═══ -->
+    <div class="view" id="v-stages">
+      <div class="sec-row">
+        <div class="sec-hed">LIFECYCLE STAGES</div>
+        <div class="sec-div"></div>
+        <div class="sec-meta">10 STAGES · CLICK TO EXPLORE</div>
+      </div>
+      <div class="lc-wrap">
+        <div style="font-family:var(--f-mono);font-size:8.5px;color:var(--tx-lo);margin-bottom:10px;letter-spacing:.09em">
+          LIFECYCLE PIPELINE — клікніть на stage ·
+          <span style="color:var(--c-rollback)">↩ rollback</span> ·
+          <span style="color:var(--c-decision)">◆ decision</span> ·
+          <span style="color:var(--c-optional)">◎ optional</span>
+        </div>
+        <div class="lc-graph" id="lc-graph"></div>
+        <div id="lc-vbars" style="display:flex;min-width:920px;margin-top:10px"></div>
+        <div style="margin-top:10px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+          <div style="font-family:var(--f-mono);font-size:8px;color:var(--tx-lo)">Variant Coverage:</div>
+          <div style="display:flex;gap:4px;align-items:center"><div style="width:20px;height:3px;background:var(--pv1);border-radius:2px"></div><span style="font-family:var(--f-mono);font-size:8px;color:var(--tx-lo)">PV-01 — Стандартний ДКР</span></div>
+          <div style="display:flex;gap:4px;align-items:center"><div style="width:20px;height:3px;background:var(--pv2);border-radius:2px"></div><span style="font-family:var(--f-mono);font-size:8px;color:var(--tx-lo)">PV-02 — Спрощений Воєнний</span></div>
+          <div style="display:flex;gap:4px;align-items:center"><div style="width:20px;height:3px;background:var(--pv3);border-radius:2px"></div><span style="font-family:var(--f-mono);font-size:8px;color:var(--tx-lo)">PV-03 — Іноземний зразок</span></div>
+          <div style="display:flex;gap:4px;align-items:center"><div style="width:20px;height:3px;background:var(--pv4);border-radius:2px"></div><span style="font-family:var(--f-mono);font-size:8px;color:var(--tx-lo)">PV-04 — Модернізація</span></div>
+          <div style="display:flex;gap:4px;align-items:center"><div style="width:20px;height:3px;background:var(--pv5);border-radius:2px"></div><span style="font-family:var(--f-mono);font-size:8px;color:var(--tx-lo)">PV-05 — Fast Track</span></div>
+        </div>
+      </div>
+      <div id="stage-detail"><div class="empty">← Виберіть stage у pipeline вище</div></div>
+    </div>
+
+    <!-- ═══ VIEW: VARIANTS ═══ -->
+    <div class="view" id="v-variants">
+      <div class="sec-row">
+        <div class="sec-hed">PROCESS VARIANTS</div>
+        <div class="sec-div"></div>
+        <div class="sec-meta">5 VARIANTS · CONDITIONAL FLOWS</div>
+      </div>
+      <div style="font-size:13px;color:var(--tx-lo);margin-bottom:18px;line-height:1.65;max-width:700px">
+        Кожен variant визначає <em>маршрут</em> через lifecycle ОВТ.
+        <span style="color:var(--c-stage)">■ mandatory</span> ·
+        <span style="color:var(--c-rollback)">✗ skipped</span> ·
+        <span style="color:var(--c-optional)">◎ optional</span> ·
+        <span style="color:var(--c-decision)">∥ parallel</span>.
+        Система не є лінійною — є loops, rollbacks, conditional branches.
+      </div>
+      <div class="pv-grid" id="pv-grid"></div>
+      <div id="pv-detail"></div>
+      <div id="pv-compare-wrap" style="margin-top:18px">
+        <div class="sec-row"><div style="font-family:var(--f-disp);font-size:18px;letter-spacing:.07em;color:var(--tx-hi)">ПОРІВНЯННЯ VARIANTS</div><div class="sec-div"></div></div>
+        <div class="card" style="padding:0;overflow:hidden">
+          <table class="cmp-t" id="cmp-table"></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ VIEW: ARTIFACTS ═══ -->
+    <div class="view" id="v-artifacts">
+      <div class="sec-row">
+        <div class="sec-hed">АРТЕФАКТИ ТА ДОКУМЕНТИ</div>
+        <div class="sec-div"></div>
+        <div class="sec-meta">11 ARTIFACTS · FULL RACI · DOCUMENT LINEAGE</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:18px" id="art-grid"></div>
+      <div id="art-detail"></div>
+    </div>
+
+    <!-- ═══ VIEW: DOCUMENT LIFECYCLE EXPLORER ═══ -->
+    <div class="view" id="v-docexplorer">
+      <div class="sec-row">
+        <div class="sec-hed">DOCUMENT LIFECYCLE EXPLORER</div>
+        <div class="sec-div"></div>
+        <div class="sec-meta">DOCUMENT FLOW · LINEAGE · BRANCHING</div>
+      </div>
+      <div style="font-size:13px;color:var(--tx-lo);margin-bottom:18px;line-height:1.65;max-width:700px">
+        Досліджуйте повний документальний ланцюг у кожному process variant: хто ініціює → готує → погоджує → підписує → що породжує далі.
+        Показано як document chain змінюється залежно від variant: які документи пропускаються, замінюються або спрощуються.
+      </div>
+      <div class="dle-layout">
+        <div class="dle-nav-card">
+          <div style="padding:10px 14px;border-bottom:1px solid var(--wire-0);font-family:var(--f-mono);font-size:9px;letter-spacing:.12em;color:var(--tx-lo);text-transform:uppercase;background:var(--s2)">Document Flows</div>
+          <div id="dle-nav"></div>
+        </div>
+        <div id="dle-content"></div>
+      </div>
+    </div>
+
+    <!-- ═══ VIEW: NORMATIVE ═══ -->
+    <div class="view" id="v-normative">
+      <div class="sec-row">
+        <div class="sec-hed">НОРМАТИВНА БАЗА</div>
+        <div class="sec-div"></div>
+        <div class="sec-meta">31 DOCUMENT · REGULATORY FRAMEWORK</div>
+      </div>
+      <div class="frow">
+        <span class="flbl">ТИП:</span>
+        <button class="fb on" onclick="fNorm('all',this)">Всі (31)</button>
+        <button class="fb" onclick="fNorm('закон',this)">Закони (6)</button>
+        <button class="fb" onclick="fNorm('постанова',this)">КМУ Постанови (13)</button>
+        <button class="fb" onclick="fNorm('наказ',this)">Накази МОУ (3)</button>
+        <button class="fb" onclick="fNorm('дсту',this)">ДСТУ В (8)</button>
+        <button class="fb" onclick="fNorm('нато',this)">НАТО (2)</button>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <table class="norm-t"><thead><tr>
+          <th>Тип</th><th>Номер / Референс</th><th style="min-width:230px">Назва документу</th>
+          <th>Що регулює</th><th>Stages</th><th>Variants</th>
+        </tr></thead>
+        <tbody id="norm-tbody"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ═══ VIEW: STATUSES ═══ -->
+    <div class="view" id="v-statuses">
+      <div class="sec-row">
+        <div class="sec-hed">STATUS / STATE MACHINE</div>
+        <div class="sec-div"></div>
+        <div class="sec-meta">14 STATES · ARTIFACT-TRIGGERED TRANSITIONS</div>
+      </div>
+      <div style="font-size:13px;color:var(--tx-lo);margin-bottom:18px;line-height:1.6;max-width:680px">
+        State machine ОВТ: всі можливі стани від ідентифікації потреби до списання.
+        Кожен перехід між статусами тригерується конкретним artifact-документом.
+        <span style="color:var(--c-rollback)">Rollback</span> переходи показують нелінійну природу lifecycle.
+      </div>
+      <div class="sm-layout">
+        <div class="sm-flow" id="sm-flow"></div>
+        <div id="sm-detail"><div class="empty">← Виберіть статус</div></div>
+      </div>
+    </div>
+
+    <!-- ═══ VIEW: OVT TYPES ═══ -->
+    <div class="view" id="v-ovt">
+      <div class="sec-row">
+        <div class="sec-hed">ТИПИ ОВТ</div>
+        <div class="sec-div"></div>
+        <div class="sec-meta">11 TYPES · OVT CLASSIFIER</div>
+      </div>
+      <div class="ovt-grid" id="ovt-grid"></div>
+      <div id="ovt-detail"></div>
+    </div>
+
+    <!-- ═══ VIEW: ROLES ═══ -->
+    <div class="view" id="v-roles">
+      <div class="sec-row">
+        <div class="sec-hed">РОЛІ ТА ВІДПОВІДАЛЬНІСТЬ</div>
+        <div class="sec-div"></div>
+        <div class="sec-meta">14 ROLES · RACI MATRIX</div>
+      </div>
+      <div class="roles-grid" id="roles-grid"></div>
+    </div>
+
+  </div><!-- /canvas -->
+</div><!-- /main -->
+</div><!-- /shell -->
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// DATA MODEL — Full Semantic ОВТ Lifecycle Platform v3
+// ═══════════════════════════════════════════════════════════════
+
+// Stage variant coverage map
+const SVC = {
+  S01:['PV-01','PV-02','PV-03','PV-04','PV-05'],
+  S02:['PV-01','PV-04','PV-05'],
+  S03:['PV-01','PV-04','PV-05'],
+  S04:['PV-01','PV-02','PV-03','PV-04','PV-05'],
+  S05:['PV-01','PV-02','PV-03','PV-05'],
+  S06:['PV-01','PV-04'],
+  S07:['PV-01','PV-02','PV-03','PV-05'],
+  S08:['PV-01','PV-02','PV-03','PV-04'],
+  S09:['PV-04','PV-05'],
+  S10:['PV-01','PV-02','PV-03','PV-04']
+};
+const PVCLR={'PV-01':'#5a9fd4','PV-02':'#d97c4a','PV-03':'#5abec8','PV-04':'#48b896','PV-05':'#d85a5a'};
+
+// ─── STAGES ───
+const STAGES=[
+{id:'S01',name:'Ініціація потреби',icon:'🎯',clr:'#5a9fd4',
+ label:'S01 — Ініціація потреби',
+ purpose:'Формування та офіційне обґрунтування оперативної або стратегічної потреби у новому чи модернізованому зразку ОВТ на основі аналізу прогалин у бойових спроможностях.',
+ startTrigger:'Виявлення прогалини у бойових спроможностях за результатами бойових дій, аналізу загроз або рішення керівництва ЗСУ / МОУ.',
+ endCondition:'Обґрунтування потреби затверджено та включено до плану оборонних закупівель. Виділено бюджетне фінансування.',
+ decisionPoints:[
+   {title:'DP-01 — Підтвердження пріоритетності потреби',
+    desc:'ГШ ЗСУ та МОУ спільно оцінюють: чи є ця потреба реальною, обґрунтованою та пріоритетною для поточного планового циклу?',
+    outcomes:['→ Потреба підтверджена → S02 — Формування ТТЗ','→ Потреба відкладена → включення до наступного планового циклу','→ Потреба відхилена → ST-00 — Відхилено / Скасовано']}
+ ],
+ rollbacks:[],
+ optionalPaths:['Залучення зовнішньої аналітики (НДУ, НАТО Think Tanks)','Попереднє маркетингове дослідження ринку ОВТ'],
+ skippedIn:[],
+ inputArtifacts:['Звіти про стан боєздатності підрозділів','Аналіз загроз та вразливостей'],
+ outputArtifacts:['ART-001 — Аналітична записка про прогалину','ART-002 — Обґрунтування потреби / Заявка на ДКР'],
+ roles:['R-04 — ГШ ЗСУ (Responsible)','R-05 — Командування видів ЗСУ (Consulted)','R-03 — Держзамовник / ДК ОВТ (Accountable)','R-12 — Мінфін (Informed — бюджетування)'],
+ norms:['NB-01 — Закон № 808-IX (Про оборонні закупівлі)','NB-02 — Закон № 2469-VIII (Про нац. безпеку)'],
+ variants:['PV-01','PV-02','PV-03','PV-04','PV-05'],
+ sla:'90–365 днів',
+ risks:['Відсутність чіткого формулювання потреби — неможливо скласти ТТЗ','Зміна пріоритетів після включення до плану','Брак бюджетного ліміту — затримка відкриття ДКР'],
+ next:['S02'],
+ dependencies:['Без затвердженого обґрунтування неможливо відкрити ДКР (S02)','Потреба мусить бути відображена у планах будівництва ЗСУ']
+},
+{id:'S02',name:'Формування вимог (ТТЗ)',icon:'📋',clr:'#4db8c4',
+ label:'S02 — Формування вимог / ТТЗ',
+ purpose:'Розробка, погодження та затвердження Тактико-технічного завдання (ТТЗ) — головного технічного документа, що визначає повний перелік вимог до майбутнього ОВТ. Відкриття ДКР.',
+ startTrigger:'Затверджений план оборонних закупівель. Виділено бюджет. Прийнято рішення МОУ про відкриття ДКР.',
+ endCondition:'ТТЗ погоджено всіма стейкхолдерами та затверджено. Підписано державний контракт на виконання ДКР.',
+ decisionPoints:[
+   {title:'DP-02 — Науково-технічна експертиза ТТЗ (НТЕ)',
+    desc:'Головна НДУ держзамовника проводить незалежну НТЕ проекту ТТЗ — чи є вимоги науково обґрунтованими та технічно реалістичними?',
+    outcomes:['→ Позитивний висновок НТЕ → підписання держконтракту → S03','→ Зауваження → доопрацювання ТТЗ → повторна НТЕ → S02 loop','→ Негативний висновок → перегляд концепції → S01 rollback']},
+   {title:'DP-03 — Вибір виконавця ДКР',
+    desc:'Визначення підприємства-виконавця: через переговорну або конкурсну процедуру. Погодження ціни контракту.',
+    outcomes:['→ Виконавця визначено → підписання контракту → S03','→ Виконавця не знайдено → відкрита конкурсна процедура','→ Ціну не погоджено → повторні переговори']}
+ ],
+ rollbacks:[{from:'S02',to:'S01',reason:'НТЕ виявила, що вимоги ТТЗ ґрунтуються на нечітко сформульованій потребі — потрібен перегляд обґрунтування.'}],
+ optionalPaths:['Залучення НДУ до спільного формулювання вимог','Попереднє технічне опрацювання концепції разом з виконавцем','Міжнародна технічна консультація (при PV-03 / іноземні рішення)'],
+ skippedIn:['PV-02 (скорочено)','PV-03 (повністю пропускається)'],
+ inputArtifacts:['ART-002 — Обґрунтування потреби','Тактичні вимоги від Командувань видів ЗСУ'],
+ outputArtifacts:['ART-003 — Тактико-технічне завдання (ТТЗ)','Держконтракт на ДКР','Єдиний наскрізний план ДКР (КМУ № 449)'],
+ roles:['R-03 — Держзамовник / ДК ОВТ (Responsible)','R-06 — Головна НДУ (НТЕ — Responsible)','R-07 — Підприємство-розробник (Consulted — попереднє обговорення)','R-12 — Мінфін (Accountable — реєстрація контракту)'],
+ norms:['NB-07 — КМУ № 234 (розд. ТТЗ та ДКР)','NB-08 — КМУ № 363 (Типовий контракт ДКР)','NB-22 — ДСТУ В 15.201:2022 (вимоги до ТТЗ)','NB-03 — Закон № 51/95-ВР (НТЕ)'],
+ variants:['PV-01','PV-04','PV-05'],
+ sla:'60–180 днів',
+ risks:['Нечіткі або взаємовиключні тактичні вимоги → неможливість розробки','Тривале міжвідомче погодження → зрив строків','Відсутність кваліфікованого виконавця на ринку'],
+ next:['S03'],
+ dependencies:['ТТЗ є основою для всього ДКР (S03)','ТТЗ є критерієм оцінки під час держвипробувань (S04)','Без підписаного контракту S03 не починається']
+},
+{id:'S03',name:'Розробка та прототипування',icon:'⚙️',clr:'#48b896',
+ label:'S03 — Розробка / ДКР / Прототипування',
+ purpose:'Виконання дослідно-конструкторської роботи (ДКР) повного циклу: аванпроект → ескізний проект → технічний проект → робоча КД → виготовлення та попередні випробування дослідного зразка.',
+ startTrigger:'Підписано державний контракт на ДКР. Перераховано аванс виконавцю (до 24 міс — КМУ № 1070). Затверджено єдиний план ДКР.',
+ endCondition:'Дослідний зразок виготовлено та прийнятий держзамовником. Підписано Акт попереднього приймання. Всі стадії ДКР закриті актами.',
+ decisionPoints:[
+   {title:'DP-04 — Захист аванпроекту',
+    desc:'Технічна рада держзамовника розглядає та оцінює доцільність запропонованого технічного рішення аванпроекту.',
+    outcomes:['→ Аванпроект захищено → продовження ДКР','→ Аванпроект відхилено → перегляд концепції → S02 rollback','→ Потрібна додаткова НТЕ → пауза, залучення НДУ']},
+   {title:'DP-05 — Приймання дослідного зразка',
+    desc:'Держзамовник перевіряє відповідність дослідного зразка вимогам ТТЗ та приймає рішення про допуск до держвипробувань.',
+    outcomes:['→ Зразок прийнято → передача на держвипробування → S04','→ Виявлено дефекти → повернення розробнику → S03 loop (доопрацювання)','→ Принципові відхилення → перегляд ТТЗ → S02 rollback']}
+ ],
+ rollbacks:[
+   {from:'S03',to:'S02',reason:'Технічна неможливість реалізувати вимоги ТТЗ у заданих обмеженнях — потрібна корекція технічного завдання.'},
+   {from:'S03',to:'S03',reason:'Внутрішній loop: доопрацювання дослідного зразка після виявлення конструктивних дефектів на попередніх заводських випробуваннях.'}
+ ],
+ optionalPaths:['Паралельне залучення субпідрядників по складальних вузлах','Іноземна кооперація для критичних компонентів (потребує дозволу ДСЕК, Закон № 549-15)','Виготовлення кількох примірників для прискорення випробувань (PV-05)'],
+ skippedIn:['PV-03 (повністю пропускається — іноземний зразок)'],
+ inputArtifacts:['ART-003 — ТТЗ (затверджене)','Держконтракт на ДКР'],
+ outputArtifacts:['Аванпроект (захищений)','Ескізний проект','Технічний проект','РКД — Робоча конструкторська документація','ART-004 — Дослідний зразок (прототип)','Акт здавання-приймання ДКР'],
+ roles:['R-07 — Підприємство-розробник (Responsible)','R-10 — Органи держгарантування якості / Військпред (Responsible — контроль якості)','R-03 — Держзамовник / ДК ОВТ (Accountable — авторський нагляд)','R-13 — ДСЕК (Consulted — при іноземних компонентах)'],
+ norms:['NB-07 — КМУ № 234 (розд. ДКР)','NB-08 — КМУ № 363 (Типовий контракт)','NB-09 — КМУ № 449 (Єдиний план ДКР)','NB-29 — ДСТУ В 15.902:2023 (КД)','NB-13 — КМУ № 781 (контроль якості)'],
+ variants:['PV-01','PV-04','PV-05'],
+ sla:'365–1825 днів',
+ risks:['Технічний ризик нових технологій → може затримати весь проект','Зрив строків субпідрядниками → penalty clauses','Дефіцит імпортних компонентів → пошук альтернативних постачальників','Зміна ТТЗ в процесі ДКР → додаткові витрати'],
+ next:['S04'],
+ dependencies:['Підписаний контракт та авансування — необхідна умова старту','РКД передається виробнику для S06 (підготовка виробництва)','Дослідний зразок є об\'єктом для S04 (держвипробування)']
+},
+{id:'S04',name:'Випробування',icon:'🔬',clr:'#c9a84c',
+ label:'S04 — Держвипробування / Випробування',
+ purpose:'Попередні (заводські) та державні випробування дослідного зразка ОВТ для об\'єктивного підтвердження відповідності вимогам ТТЗ та отримання офіційного висновку Держкомісії.',
+ startTrigger:'Готовий та прийнятий дослідний зразок. Затверджена Програма і методика випробувань (ПМВ). Сформована Держкомісія (наказ МОУ).',
+ endCondition:'Підписаний Акт державних випробувань з позитивним або умовно позитивним висновком. Рекомендація Держкомісії прийняти на озброєння.',
+ decisionPoints:[
+   {title:'DP-06 — Результат попередніх (заводських) випробувань',
+    desc:'Підприємство самостійно перевіряє зразок перед передачею Держкомісії. Чи відповідає зразок базовим вимогам ТТЗ?',
+    outcomes:['→ Попередні випробування пройдено → передача Держкомісії','→ Виявлено дефекти → доопрацювання → S03 loop → повторна здача']},
+   {title:'DP-07 — Висновок Державної комісії',
+    desc:'Міжвідомча Держкомісія (МОУ + ГШ + Командування) після всіх програм випробувань виносить офіційний висновок.',
+    outcomes:['→ Позитивний акт → рекомендація прийняти → S05','→ Умовно позитивний → усунення зауважень у строк → повторні окремі програми','→ Негативний акт → принципові недоліки → повернення розробнику → S03 rollback','→ Потребує перегляду ТТЗ → S02 rollback (виняткові випадки)']}
+ ],
+ rollbacks:[
+   {from:'S04',to:'S03',reason:'Негативний акт держвипробувань — принципові конструктивні недоліки, усунення яких потребує значного доопрацювання.'},
+   {from:'S04',to:'S02',reason:'Вимоги ТТЗ виявились технічно нереалістичними або суперечать один одному — потрібен перегляд самого завдання.'}
+ ],
+ optionalPaths:['Визначальні відомчі випробування (PV-02) замість повних держвипробувань — по КМУ № 345','Адаптаційні випробування іноземного зразка (PV-03) — по КМУ № 160','Прискорені випробування в умовах бойових дій (PV-05 / Fast Track)'],
+ skippedIn:[],
+ inputArtifacts:['ART-004 — Дослідний зразок','Програма і методика випробувань (ПМВ)','Акт попередніх заводських випробувань'],
+ outputArtifacts:['Звіт з попередніх випробувань','ART-005 — Акт державних випробувань','Висновок Держкомісії з рекомендацією'],
+ roles:['R-09 — Держкомісія МОУ+ГШ+Командування (Responsible)','R-07 — Підприємство-розробник (Responsible — здача зразка)','R-06 — Головна НДУ (Consulted — науковий супровід)'],
+ norms:['NB-11 — КМУ № 159 (порядок випробувань)','NB-12 — КМУ № 160 (іноземні зразки)','NB-19 — Наказ МОУ № 576 (інструкція)','NB-23 — ДСТУ В 15.210:2023','NB-24 — ДСТУ В 15.211:2023'],
+ variants:['PV-01','PV-02','PV-03','PV-04','PV-05'],
+ sla:'60–365 днів',
+ risks:['Відмова зразка під час критичних програм → публічний провал','Невідповідність ТТЗ виявлена на пізньому етапі → дорогий rollback','Затягування формування та роботи Держкомісії → технічна непридатність членів'],
+ next:['S05','S03'],
+ dependencies:['S04 = єдина обов\'язкова gate для всіх variants (або аналог)','Акт S04 = юридична підстава для Наказу МОУ (S05)','Негативний акт S04 блокує весь подальший lifecycle']
+},
+{id:'S05',name:'Допуск / Кодифікація',icon:'✅',clr:'#d97c4a',
+ label:'S05 — Допуск / Кодифікація / Прийняття на озброєння',
+ purpose:'Офіційне прийняття ОВТ на озброєння або постачання ЗСУ через Наказ МОУ. Паралельно — присвоєння кодифікаційного номера NSN за системою НАТО.',
+ startTrigger:'Позитивний Акт державних випробувань (ART-005). Рішення Міжвідомчої комісії. Отриманий висновок Держкомісії.',
+ endCondition:'Підписано та опубліковано Наказ МОУ про прийняття на озброєння. Присвоєно NSN коди всім предметам постачання.',
+ decisionPoints:[
+   {title:'DP-08 — Рішення Колегії МОУ щодо форми допуску',
+    desc:'Колегія МОУ приймає рішення: прийняти на озброєння (вища форма) чи лише на постачання (обмежена форма).',
+    outcomes:['→ Прийнято на озброєння → повний статус → S06 (підготовка в-ва)','→ Прийнято на постачання → обмежений статус → S07 (закупівля без S06)','→ Відкладено → усунення зауважень → повторний розгляд Колегії']}
+ ],
+ rollbacks:[],
+ optionalPaths:['Прискорений допуск (PV-02) — через відомчі випробування, без Колегії МОУ (КМУ № 345)','Адаптаційний допуск іноземного зразка (PV-03) — по КМУ № 160'],
+ skippedIn:[],
+ inputArtifacts:['ART-005 — Акт держвипробувань','Висновок Держкомісії','Технічна документація для кодифікації NSN'],
+ outputArtifacts:['ART-006 — Наказ МОУ про прийняття на озброєння','Кодифікаційний каталог NSN предметів постачання'],
+ roles:['R-01 — МОУ / Міністр оборони (Accountable — підписання Наказу)','R-02 — Депт. кодифікації МОУ (Responsible — NSN)','R-04 — ГШ ЗСУ (Consulted)'],
+ norms:['NB-07 — КМУ № 234','NB-10 — КМУ № 345 (воєнний стан)','NB-20 — Наказ МОУ № 673 (кодифікація)','NB-30 — ACodP-1/ACodP-2','NB-31 — STANAG 3150/3151/4177/4199/4438'],
+ variants:['PV-01','PV-02','PV-03','PV-05'],
+ sla:'30–90 днів',
+ risks:['Бюрократичні затримки на рівні Колегії МОУ','Відсутність NSN для критичних компонентів → затримка кодифікації','Невідповідність окремих вузлів стандартам НАТО → часткова кодифікація'],
+ next:['S06','S07'],
+ dependencies:['Наказ МОУ = юридична підстава для держконтракту на закупівлю (S07)','NSN = обов\'язкова умова для логістики та сумісності з НАТО','Без Наказу МОУ підрозділи не можуть офіційно отримати ОВТ']
+},
+{id:'S06',name:'Підготовка виробництва',icon:'🏭',clr:'#9c71d8',
+ label:'S06 — Підготовка серійного виробництва',
+ purpose:'Технологічна підготовка серійного виробництва на підприємстві-виробнику: розробка технологічних регламентів, оснащення виробничих ліній, закладення КД до страхового фонду документації.',
+ startTrigger:'Наказ МОУ про прийняття на озброєння (ART-006). Передача затвердженої РКД підприємству-виробнику. Укладання ліцензійної угоди.',
+ endCondition:'Готовність підприємства підтверджена держкомісією. Технологічний регламент затверджено. КД передано до СФД України.',
+ decisionPoints:[
+   {title:'DP-09 — Підтвердження готовності виробництва',
+    desc:'Держкомісія з представників МОУ та МОТТ перевіряє виробничу та технологічну готовність підприємства до серійного виробництва.',
+    outcomes:['→ Готовність підтверджена → S07 (серійна закупівля)','→ Часткова готовність → план дооснащення → продовження S06','→ Підприємство не готове → пошук альтернативного виробника']}
+ ],
+ rollbacks:[],
+ optionalPaths:['Будівництво нових виробничих потужностей (кредити КМУ)','Передача обладнання від МОУ підприємству','Кооперація з іноземним виробником (Technology Transfer)'],
+ skippedIn:['PV-02 (скорочено або пропускається)','PV-03 (повністю пропускається)','PV-05 (виконується паралельно з S07)'],
+ inputArtifacts:['ART-006 — Наказ МОУ','РКД — Робоча конструкторська документація від розробника'],
+ outputArtifacts:['Технологічна документація (ТД)','Технологічний регламент виробництва','Документація в СФД (Страховий фонд документації)'],
+ roles:['R-08 — Підприємство-виробник (Responsible)','R-03 — Держзамовник (Accountable)','R-10 — Органи держгарантування якості (Responsible — перевірка)'],
+ norms:['NB-07 — КМУ № 234 (підготовка виробництва)','NB-06 — Закон № 2332-14 (СФД)','NB-25 — ДСТУ В 15.301:2023'],
+ variants:['PV-01','PV-04'],
+ sla:'90–365 днів',
+ risks:['Відсутність необхідних виробничих потужностей у виконавця','Застаріле обладнання → ризики якості','Брак кваліфікованих інженерів-технологів'],
+ next:['S07'],
+ dependencies:['Технологічна готовність — умова старту серійного виробництва','КД у СФД — обов\'язкова умова за законом № 2332-14','РКД від розробника (S03) = основа для ТД виробника']
+},
+{id:'S07',name:'Серійне виробництво та закупівля',icon:'📦',clr:'#d85a5a',
+ label:'S07 — Серійне виробництво та державна закупівля',
+ purpose:'Виготовлення серійних зразків ОВТ за держконтрактом, технічний контроль якості кожної партії та постачання готової продукції до підрозділів ЗСУ.',
+ startTrigger:'Підписаний держконтракт на серійну закупівлю. Готовність виробництва підтверджена. Відкрите фінансування за ДССБ.',
+ endCondition:'Підписані акти приймання-передачі всіх зразків відповідно до обсягів контракту. Контракт повністю виконано.',
+ decisionPoints:[
+   {title:'DP-10 — Приймання кожної партії продукції',
+    desc:'Органи держгарантування якості (Військпред / ВКВП) перевіряють кожну партію відповідно до ТУ та умов контракту.',
+    outcomes:['→ Партія прийнята → відвантаження до підрозділів → S08','→ Рекламація по партії → усунення дефектів → повторна здача','→ Системна проблема якості → зупинка виробництва → S06 rollback']}
+ ],
+ rollbacks:[{from:'S07',to:'S06',reason:'Системна проблема якості, що потребує корекції технологічного процесу — необхідна зміна технологічного регламенту.'}],
+ optionalPaths:['Авансування до 24 місяців (КМУ № 1070)','Укладання багаторічного контракту (рамковий контракт)'],
+ skippedIn:[],
+ inputArtifacts:['ART-006 — Наказ МОУ','Держконтракт на закупівлю','Технічні умови (ТУ)'],
+ outputArtifacts:['ART-007 — Держконтракт на серійне виробництво','Акти приймання кожної партії (Військпред)','ART-008 — Акт приймання-передачі ОВТ до підрозділу'],
+ roles:['R-08 — Підприємство-виробник (Responsible)','R-03 — Держзамовник / ДК ОВТ (Accountable)','R-10 — Органи держгарантування якості / Військпред (Responsible — приймання)','R-12 — Мінфін (Accountable — реєстрація зобов\'язань)'],
+ norms:['NB-01 — Закон № 808-IX','NB-08 — КМУ № 363 (Типовий контракт)','NB-13 — КМУ № 781 (якість)','NB-14 — КМУ № 452 (держгарантування)','NB-16 — КМУ № 309 (ціноутворення)','NB-17 — КМУ № 1070 (авансування)'],
+ variants:['PV-01','PV-02','PV-03','PV-05'],
+ sla:'Визначається контрактом',
+ risks:['Зрив строків виробництва — санкції за контрактом','Дефіцит компонентів → вимушене зупинення лінії','Рекламаційні акти → претензійна робота','Затримки казначейського авансування → зупинка виробництва'],
+ next:['S08'],
+ dependencies:['Акт приймання-передачі = перехід до S08 (експлуатація)','Контракт = фінансова основа lifecycle на кілька років','Військпред = обов\'язкова умова для приймання будь-якої партії ОВТ']
+},
+{id:'S08',name:'Експлуатація та сервіс',icon:'⚔️',clr:'#5abec8',
+ label:'S08 — Бойова експлуатація та технічне обслуговування',
+ purpose:'Використання ОВТ у бойовому складі підрозділів, регулярне технічне обслуговування, плановий та позаплановий ремонт, підготовка особового складу, збір польових даних та рекламацій.',
+ startTrigger:'Підписаний акт приймання-передачі ОВТ від постачальника до підрозділу (ART-008). ОВТ поставлено на облік.',
+ endCondition:'Рішення про виведення ОВТ з бойового складу: відправка на модернізацію (S09) або на списання (S10).',
+ decisionPoints:[
+   {title:'DP-11 — Оцінка технічного стану ОВТ',
+    desc:'Регулярна технічна інспекція служби озброєння: визначення придатності до подальшої експлуатації та аналіз польових рекламацій.',
+    outcomes:['→ Придатний → продовження бойової експлуатації → S08 continues','→ Потребує ремонту → технічне обслуговування → S08 (ремонт) → повернення в склад','→ Накопичено рекламаційних даних → рішення про модернізацію → S09','→ Вичерпано ресурс → рішення про списання → S10']}
+ ],
+ rollbacks:[],
+ optionalPaths:['Продовження строку служби за результатами НДУ-аналізу (КМУ № 135)','Гарантійний ремонт виробником (умови контракту)','Модернізація власними силами ремонтних підрозділів'],
+ skippedIn:[],
+ inputArtifacts:['ART-008 — Акт приймання-передачі','Формуляр ОВТ','Регламент ТО','Комплект ЗІП'],
+ outputArtifacts:['Акти планових ТО','ART-009 — Звіт з експлуатації / Рекламаційний акт','Журнали технічного стану'],
+ roles:['R-11 — Командири підрозділів та техперсонал (Responsible)','R-08 — Ремонтні підприємства (Responsible — гарантійний ремонт)','R-10 — ВКВП (Informed — статистика рекламацій)'],
+ norms:['NB-15 — КМУ № 135 (ремонт/модернізація)','NB-21 — Наказ МОУ № 300','NB-26 — ДСТУ В 15.501:2021','NB-27 — ДСТУ В 15.703:2021 (рекламації)','NB-28 — ДСТУ В 15.705:2022 (ЗІП)'],
+ variants:['PV-01','PV-02','PV-03','PV-04'],
+ sla:'Весь строк служби',
+ risks:['Нестача ЗІП та запасних частин → зниження боєздатності','Відсутність кваліфікованих техніків','Бойові пошкодження → аварійний ремонт','Технічне застарівання → зниження ефективності'],
+ next:['S09','S10'],
+ dependencies:['Рекламаційні акти S08 = trigger для S09 (рішення про модернізацію)','Висновок про непридатність = trigger для S10 (списання)','ЗІП від виробника (S07) = умова підтримки боєздатності в S08']
+},
+{id:'S09',name:'Зворотний зв\'язок / Модернізація',icon:'🔄',clr:'#c9a84c',
+ label:'S09 — Зворотний зв\'язок / Аналіз / Модернізація',
+ purpose:'Систематичний аналіз даних польової експлуатації, виявлення конструктивних недоліків, прийняття рішення про доцільність та вид модернізації, виконання модернізаційних робіт.',
+ startTrigger:'Накопичені рекламаційні акти та звіти з експлуатації (ART-009). Рішення держзамовника або Командування про аналіз стану ОВТ.',
+ endCondition:'Затверджена програма модернізації. Визначено вид роботи (ТТЗ на модернізацію або відмова від неї). Або — рішення про списання.',
+ decisionPoints:[
+   {title:'DP-12 — Вибір типу та обсягу модернізації',
+    desc:'Держзамовник та КБ аналізують рекламаційні дані та вирішують: яка глибина модернізації потрібна та який process variant застосувати?',
+    outcomes:['→ Глибока модернізація → нове ТТЗ → S02 (PV-04)','→ Часткова модернізація → вдосконалення → S03 (PV-04)','→ Fast-track modernization → S03||S04 паралельно (PV-05)','→ Закупівля іноземних компонентів → дозвіл ДСЕК → S03','→ Модернізація недоцільна → продовження поточної експлуатації → S08','→ Списання рентабельніше → S10']}
+ ],
+ rollbacks:[{from:'S09',to:'S08',reason:'Аналіз показав, що модернізація економічно недоцільна або технічно неможлива — продовжити поточну експлуатацію.'}],
+ optionalPaths:['Іноземна кооперація для нових компонентів (Закон № 549-15 / ДСЕК)','Залучення НДУ для аналізу даних рекламацій'],
+ skippedIn:['PV-01 (опціонально)','PV-02 (зазвичай не передбачений)','PV-03 (рідко — при іноземному зразку)'],
+ inputArtifacts:['ART-009 — Звіт з експлуатації / Рекламаційний акт'],
+ outputArtifacts:['Акт дефектації','Нове ТТЗ на модернізацію','Програма модернізації','Висновок НДУ про стан ОВТ'],
+ roles:['R-03 — Держзамовник / ДК ОВТ (Accountable)','R-07 — Підприємство-розробник / КБ (Responsible)','R-05 — Командування видів ЗСУ (Consulted)','R-13 — ДСЕК (Accountable — при іноземних компонентах)'],
+ norms:['NB-15 — КМУ № 135 (модернізація)','NB-04 — Закон № 549-15 (ДСЕК)','NB-22 — ДСТУ В 15.201:2022'],
+ variants:['PV-04','PV-05'],
+ sla:'180–730 днів',
+ risks:['Несумісність нових компонентів з існуючою системою','Зміна тактичних вимог в процесі модернізації → нове ТТЗ','Бюджетні обмеження → скорочення обсягу модернізації'],
+ next:['S04','S08','S10'],
+ dependencies:['PV-04 починається з S09 (не з S01!)','Акт дефектації = trigger для S02 (нове ТТЗ на модернізацію)','S09 → S04 = повторні держвипробування модернізованого зразка']
+},
+{id:'S10',name:'Списання та утилізація',icon:'♻️',clr:'#4d6080',
+ label:'S10 — Списання та утилізація / Реалізація',
+ purpose:'Виведення ОВТ з бойового складу, офіційне списання з балансу, передача спеціалізованому підприємству для утилізації або реалізація через аукціон.',
+ startTrigger:'Висновок технічної комісії про непридатність ОВТ або закінчення встановленого призначеного ресурсу.',
+ endCondition:'Акт списання підписано. ОВТ передано утилізатору або реалізовано. Знято з балансу фінансовою службою.',
+ decisionPoints:[
+   {title:'DP-13 — Визначення способу вибуття ОВТ',
+    desc:'Комісія після списання вирішує: яким чином буде здійснено вибуття з урахуванням стану та можливостей?',
+    outcomes:['→ Утилізація → передача спецпідприємству (ART-011)','→ Реалізація → електронний аукціон МОУ (ART-011)','→ Розбирання на ЗІП → передача на склад запасних частин для S08 інших зразків']}
+ ],
+ rollbacks:[],
+ optionalPaths:['Технологічна утилізація боєприпасів на спецпідприємствах','Передача союзникам (через ДСЕК — Закон № 549-15)'],
+ skippedIn:[],
+ inputArtifacts:['Формуляр ОВТ','Висновок технічної комісії про непридатність'],
+ outputArtifacts:['ART-010 — Акт списання ОВТ','ART-011 — Рішення про утилізацію або реалізацію'],
+ roles:['R-11 — Командири підрозділів (Responsible — ініціювання)','Комісія з визначення придатності','R-14 — Підприємства-утилізатори (Responsible — виконання)'],
+ norms:['NB-05 — Закон № 1075-XIV (правовий режим майна ЗСУ)','NB-07 — КМУ № 234 (припинення виробництва)'],
+ variants:['PV-01','PV-02','PV-03','PV-04'],
+ sla:'30–180 днів',
+ risks:['Відсутність потужностей для утилізації → затримки','Ризик незаконного відчуження майна ЗСУ','Екологічні ризики при утилізації боєприпасів'],
+ next:[],
+ dependencies:['Акт списання (ART-010) = юридична підстава для зняття з балансу','ART-011 = завершення lifecycle ОВТ']
+}
+];
+
+// ─── ARTIFACTS ───
+const ARTIFACTS=[
+{id:'ART-001',name:'Аналітична записка про прогалину у спроможностях',label:'ART-001 — Аналітична записка',
+ type:'Аналітичний документ',mandatory:true,stage:'S01',clr:'#5a9fd4',
+ purpose:'Обґрунтовує дефіцит бойових спроможностей та необхідність нового або модернізованого ОВТ. Є стартовим документом lifecycle.',
+ initiatedBy:'ГШ ЗСУ / Командування видів ЗСУ',
+ preparedBy:'Управління бойової підготовки ГШ ЗСУ',
+ approvedBy:'Начальник Генерального штабу ЗСУ',
+ signedBy:'Начальник ГШ ЗСУ',
+ transferredTo:'МОУ Департамент озброєння та військової техніки',
+ usedIn:'S01 — підстава для обґрунтування потреби; S02 — підстава для ТТЗ',
+ creationTrigger:'Виявлення прогалини у спроможностях за результатами аналізу загроз або бойових дій',
+ stageCompletion:'Підписання переводить ОВТ у статус ST-01 — Потреба ідентифікована',
+ generates:['ART-002 — Обґрунтування потреби'],
+ variants:['PV-01','PV-02','PV-03','PV-04','PV-05'],
+ norm:'Закон № 2469-VIII (Про нац. безпеку); Закон № 808-IX',
+ rollbackUsage:'Якщо потреба відхилена — ST-00 Відхилено/Скасовано'},
+
+{id:'ART-002',name:'Обґрунтування потреби / Заявка на ДКР',label:'ART-002 — Обґрунтування потреби',
+ type:'Плановий документ',mandatory:true,stage:'S01→S02',clr:'#5a9fd4',
+ purpose:'Офіційне включення потреби до плану оборонних закупівель та бюджетне обґрунтування для відкриття ДКР.',
+ initiatedBy:'МОУ Департамент озброєння',
+ preparedBy:'ДК ОВТ / Уповноважений орган МОУ',
+ approvedBy:'МОУ + Міністерство фінансів (бюджетування)',
+ signedBy:'Міністр оборони',
+ transferredTo:'Плановий відділ МОУ; Мінфін для включення до ДССБ',
+ usedIn:'S02 — підстава для розробки ТТЗ та оголошення ДКР',
+ creationTrigger:'Наявність підписаної ART-001 та рішення про пріоритизацію потреби',
+ stageCompletion:'Затвердження завершує S01 і відкриває S02',
+ generates:['ART-003 — ТТЗ на ДКР'],
+ variants:['PV-01','PV-02','PV-04','PV-05'],
+ norm:'Закон № 808-IX (ст.9); КМУ № 363 (Порядок планування)',
+ rollbackUsage:'—'},
+
+{id:'ART-003',name:'Тактико-технічне завдання (ТТЗ)',label:'ART-003 — Тактико-технічне завдання (ТТЗ)',
+ type:'Нормативно-технічний документ',mandatory:true,stage:'S02',clr:'#4db8c4',
+ purpose:'Визначає повний перелік тактичних та технічних вимог до ОВТ. Є юридичним документом контракту ДКР та критерієм оцінки результатів держвипробувань.',
+ initiatedBy:'Держзамовник (МОУ / ДК ОВТ)',
+ preparedBy:'МОУ / ДК ОВТ спільно з Головною НДУ',
+ approvedBy:'Науково-технічна рада МОУ; Позитивний висновок НТЕ НДУ',
+ signedBy:'Голова ДК ОВТ / Заступник Міністра оборони',
+ transferredTo:'Підприємство-виконавець ДКР',
+ usedIn:'S03 — головний технічний документ ДКР; S04 — критерій оцінки держвипробувань',
+ creationTrigger:'Затверджена ART-002 та прийняте рішення про відкриття ДКР',
+ stageCompletion:'Затвердження ТТЗ + підписання держконтракту завершують S02',
+ generates:['ART-004 — Дослідний зразок','Держконтракт на ДКР'],
+ variants:['PV-01','PV-04 (модернізація)','PV-05 (скорочене)'],
+ norm:'ДСТУ В 15.201:2022; КМУ № 234 (розд.3); Закон № 51/95-ВР (НТЕ)',
+ rollbackUsage:'При негативному акті S04 — потрібна корекція або перегляд ТТЗ'},
+
+{id:'ART-004',name:'Дослідний зразок (прототип)',label:'ART-004 — Дослідний зразок (прототип)',
+ type:'Матеріальний об\'єкт + КД',mandatory:true,stage:'S03',clr:'#48b896',
+ purpose:'Фізичний примірник розробленого ОВТ, виготовлений відповідно до затвердженої РКД для проведення державних випробувань.',
+ initiatedBy:'Підприємство-розробник (виконавець ДКР)',
+ preparedBy:'Підприємство-розробник + субпідрядники',
+ approvedBy:'Держзамовник (попереднє приймання Акт ЗПР)',
+ signedBy:'Держзамовник + Підприємство-розробник',
+ transferredTo:'Полігон / Держкомісія для держвипробувань',
+ usedIn:'S04 — об\'єкт державних випробувань',
+ creationTrigger:'Завершення всіх стадій ДКР відповідно до єдиного плану; підписання Акту здавання-приймання ДКР',
+ stageCompletion:'Підписання Акту попереднього приймання завершує S03',
+ generates:['ART-005 — Акт державних випробувань'],
+ variants:['PV-01','PV-04','PV-05'],
+ norm:'КМУ № 234 (розд.4); КМУ № 363; ДСТУ В 15.902:2023',
+ rollbackUsage:'Якщо дефекти знайдено → повернення розробнику → доопрацювання → S03 loop'},
+
+{id:'ART-005',name:'Акт державних випробувань',label:'ART-005 — Акт державних випробувань',
+ type:'Офіційний акт державної комісії',mandatory:true,stage:'S04',clr:'#c9a84c',
+ purpose:'Документує результати державних випробувань і містить офіційний висновок комісії: рекомендується / не рекомендується прийняття на озброєння.',
+ initiatedBy:'Держкомісія (МОУ + ГШ + Командування)',
+ preparedBy:'Секретар Держкомісії',
+ approvedBy:'Всі члени Держкомісії — колегіальне рішення',
+ signedBy:'Голова Держкомісії (представник МОУ)',
+ transferredTo:'МОУ Колегія для прийняття рішення про прийняття на озброєння',
+ usedIn:'S05 — юридична підстава для видання Наказу МОУ',
+ creationTrigger:'Завершення всіх програм держвипробувань відповідно до затвердженої ПМВ',
+ stageCompletion:'Підписання позитивного Акту завершує S04 та відкриває S05',
+ generates:['ART-006 — Наказ МОУ про прийняття на озброєння'],
+ variants:['PV-01','PV-02 (відомчий акт)','PV-03 (адаптаційний акт)','PV-04','PV-05'],
+ norm:'КМУ № 159; Наказ МОУ № 576; ДСТУ В 15.210:2023; ДСТУ В 15.211:2023',
+ rollbackUsage:'Негативний акт → S04 → S03 rollback (розробник усуває недоліки)'},
+
+{id:'ART-006',name:'Наказ МОУ про прийняття на озброєння',label:'ART-006 — Наказ МОУ про прийняття на озброєння',
+ type:'Нормативний акт МОУ',mandatory:true,stage:'S05',clr:'#d97c4a',
+ purpose:'Офіційно та юридично оформлює прийняття ОВТ на озброєння або постачання Збройних Сил України. Відкриває можливість серійної закупівлі.',
+ initiatedBy:'ДК ОВТ + Юридичний департамент МОУ',
+ preparedBy:'МОУ Юридичний департамент',
+ approvedBy:'Колегія МОУ',
+ signedBy:'Міністр оборони України',
+ transferredTo:'ГШ ЗСУ; ДК ОВТ; Підприємство-виробник; Юридичний вісник МОУ (публікація)',
+ usedIn:'S06 — підстава для підготовки виробництва; S07 — підстава для держконтракту',
+ creationTrigger:'Позитивний Акт держвипробувань (ART-005) + рішення Колегії МОУ',
+ stageCompletion:'Підписання та публікація Наказу завершують S05',
+ generates:['ART-007 — Держконтракт на серійне виробництво'],
+ variants:['PV-01','PV-02 (прискорений)','PV-03','PV-05'],
+ norm:'КМУ № 234 (розд.5); КМУ № 345 (прискорений при воєнному стані)',
+ rollbackUsage:'—'},
+
+{id:'ART-007',name:'Держконтракт на серійне виробництво та закупівлю',label:'ART-007 — Держконтракт на серійне виробництво',
+ type:'Державний контракт (господарський договір)',mandatory:true,stage:'S07',clr:'#9c71d8',
+ purpose:'Юридичний договір між держзамовником та підприємством-виробником на виготовлення та постачання серійних зразків із визначеними строками, кількістю та ціною.',
+ initiatedBy:'Держзамовник (МОУ / ДК ОВТ)',
+ preparedBy:'ДК ОВТ + Мінфін (за Типовим контрактом КМУ № 363)',
+ approvedBy:'Мінфін (реєстрація бюджетного зобов\'язання)',
+ signedBy:'Держзамовник + Підприємство-виробник',
+ transferredTo:'Казначейство (реєстрація зобов\'язань); Підприємство-виробник',
+ usedIn:'S07 — юридична підстава для початку серійного виробництва',
+ creationTrigger:'ART-006 (Наказ МОУ) та затверджений план закупівель на рік',
+ stageCompletion:'Підписання контракту запускає S07 (серійне виробництво)',
+ generates:['ART-008 — Акт приймання-передачі ОВТ'],
+ variants:['PV-01','PV-02','PV-03','PV-05'],
+ norm:'Закон № 808-IX; КМУ № 363; КМУ № 309 (ціна); КМУ № 1070 (аванс)',
+ rollbackUsage:'—'},
+
+{id:'ART-008',name:'Акт приймання-передачі ОВТ до підрозділу',label:'ART-008 — Акт приймання-передачі до підрозділу',
+ type:'Обліковий документ',mandatory:true,stage:'S07→S08',clr:'#d85a5a',
+ purpose:'Підтверджує фактичну передачу серійних зразків від постачальника до конкретного підрозділу. Підстава для постановки ОВТ на балансовий облік.',
+ initiatedBy:'Підприємство-виробник / Постачальник',
+ preparedBy:'Служба матеріально-технічного забезпечення',
+ approvedBy:'Представник Держзамовника (Військпред)',
+ signedBy:'Виробник + Командир підрозділу',
+ transferredTo:'Служба озброєння підрозділу; Фінансова служба (балансовий облік)',
+ usedIn:'S08 — підстава для початку бойової експлуатації; змінює статус до ST-09',
+ creationTrigger:'Фізична поставка серійних зразків до місця дислокації підрозділу',
+ stageCompletion:'Підписання переводить ОВТ у статус ST-09 — В експлуатації',
+ generates:['ART-009 — Звіт з експлуатації / Рекламаційний акт (через S08)'],
+ variants:['PV-01','PV-02','PV-03'],
+ norm:'Закон № 1075-XIV; КМУ № 363',
+ rollbackUsage:'—'},
+
+{id:'ART-009',name:'Звіт з експлуатації / Рекламаційний акт',label:'ART-009 — Звіт з експлуатації / Рекламаційний акт',
+ type:'Звітний / Рекламаційний документ',mandatory:false,stage:'S08→S09',clr:'#c9a84c',
+ purpose:'Документує виявлені конструктивні або виробничі дефекти ОВТ в ході бойової експлуатації. Підстава для пред\'явлення претензій виробнику або для рішення про модернізацію.',
+ initiatedBy:'Командир підрозділу / Служба озброєння',
+ preparedBy:'Технічний персонал підрозділу',
+ approvedBy:'Командир підрозділу',
+ signedBy:'Командир + Представник виробника (якщо гарантійний)',
+ transferredTo:'Підприємство-виробник (претензія); Держзамовник (для аналізу тенденцій)',
+ usedIn:'S09 — підстава для рішення про модернізацію; аналіз якості виробництва',
+ creationTrigger:'Виявлення конструктивного або виробничого дефекту в ході польової експлуатації',
+ stageCompletion:'Накопичені рекламаційні акти тригерують S09 (рішення про модернізацію)',
+ generates:['Акт дефектації','Рішення про модернізацію'],
+ variants:['PV-01','PV-02','PV-03','PV-04'],
+ norm:'ДСТУ В 15.703:2021 (рекламаційна робота); ДСТУ В 15.705:2022 (ЗІП)',
+ rollbackUsage:'Не є rollback artifact — ініціює S09 (окремий lifecycle loop)'},
+
+{id:'ART-010',name:'Акт списання ОВТ',label:'ART-010 — Акт списання ОВТ',
+ type:'Юридично-обліковий документ',mandatory:true,stage:'S10',clr:'#4d6080',
+ purpose:'Юридично оформлює зняття ОВТ з балансу підрозділу. Підстава для прийняття рішення щодо подальшого способу вибуття.',
+ initiatedBy:'Командир підрозділу',
+ preparedBy:'Комісія підрозділу + Фінансова служба',
+ approvedBy:'Командир підрозділу + Ревізор',
+ signedBy:'Голова комісії + Командир',
+ transferredTo:'Фінансова служба (зняття з балансу); Орган управління ОВТ МОУ',
+ usedIn:'S10 — перехід до стану ST-13 — Списано',
+ creationTrigger:'Висновок технічної комісії про непридатність ОВТ до подальшого використання',
+ stageCompletion:'Підписання завершує основну частину S10 (списання)',
+ generates:['ART-011 — Рішення про утилізацію або реалізацію'],
+ variants:['PV-01','PV-02','PV-03','PV-04'],
+ norm:'Закон № 1075-XIV (спрощений порядок при воєнному стані)',
+ rollbackUsage:'—'},
+
+{id:'ART-011',name:'Рішення про утилізацію або реалізацію ОВТ',label:'ART-011 — Рішення про утилізацію або реалізацію',
+ type:'Адміністративне рішення МОУ',mandatory:true,stage:'S10',clr:'#4d6080',
+ purpose:'Визначає кінцевий спосіб вибуття списаного ОВТ: утилізація, реалізація на аукціоні або розбирання на ЗІП.',
+ initiatedBy:'МОУ / Командування',
+ preparedBy:'МОУ Департамент майна',
+ approvedBy:'МОУ',
+ signedBy:'Уповноважена особа МОУ',
+ transferredTo:'Підприємство-утилізатор або організатор аукціону',
+ usedIn:'Кінець lifecycle ОВТ — термінальний документ',
+ creationTrigger:'Підписаний ART-010 (Акт списання)',
+ stageCompletion:'Кінець lifecycle ОВТ — ST-13 → жодних подальших переходів',
+ generates:[],
+ variants:['PV-01','PV-02','PV-03','PV-04'],
+ norm:'Закон № 1075-XIV; КМУ № 234 (припинення виробництва)',
+ rollbackUsage:'—'}
+];
+
+// ─── NORMATIVE ───
+const NORMATIVE=[
+{id:'NB-01',type:'закон',num:'Закон України № 808-IX',name:'Про оборонні закупівлі',desc:'Головний закон: вартість ЖЦ, планування, контрактування ОП',stages:'S01;S02;S07',variants:'PV-01–PV-05',link:'https://zakon.rada.gov.ua/laws/show/808-20'},
+{id:'NB-02',type:'закон',num:'Закон України № 2469-VIII',name:'Про національну безпеку України',desc:'Оборонне планування та огляд ОПК',stages:'S01',variants:'PV-01–PV-05',link:'https://zakon.rada.gov.ua/laws/show/2469-19'},
+{id:'NB-03',type:'закон',num:'Закон України № 51/95-ВР',name:'Про наукову і науково-технічну експертизу',desc:'НТЕ ТТЗ та рішень про припинення ДКР',stages:'S02',variants:'PV-01;PV-04;PV-05',link:'#'},
+{id:'NB-04',type:'закон',num:'Закон України № 549-15',name:'Про держ. контроль за міжн. передачами товарів ВП',desc:'ДСЕК: дозволи на імпорт компонентів та передачу технологій',stages:'S03;S09',variants:'PV-03;PV-04',link:'#'},
+{id:'NB-05',type:'закон',num:'Закон України № 1075-XIV',name:'Про правовий режим майна у ЗСУ',desc:'Списання ОВТ, спрощений порядок при воєнному стані',stages:'S10',variants:'PV-01–PV-04',link:'#'},
+{id:'NB-06',type:'закон',num:'Закон України № 2332-14',name:'Про страховий фонд документації України',desc:'Зберігання КД на ОВТ у страховому фонді при підготовці виробництва',stages:'S06',variants:'PV-01;PV-04',link:'#'},
+{id:'NB-07',type:'постанова',num:'КМУ № 234 (2021)',name:'Порядок розроблення, освоєння та випуску нових видів ОП',desc:'ТТЗ, ДКР, прийняття на озброєння, підготовка виробництва, припинення випуску',stages:'S01–S06;S10',variants:'PV-01;PV-04',link:'https://zakon.rada.gov.ua/laws/show/234-2021'},
+{id:'NB-08',type:'постанова',num:'КМУ № 363 (2021)',name:'Питання оборонних закупівель',desc:'Типові контракти ДКР та закупівля; переговори; протоколи цін',stages:'S02;S07',variants:'PV-01–PV-05',link:'#'},
+{id:'NB-09',type:'постанова',num:'КМУ № 449 (2013)',name:'Єдиний наскрізний план створення зразка ОВТ',desc:'Єдиний план ДКР: строки, витрати, результати',stages:'S02;S03',variants:'PV-01;PV-04',link:'#'},
+{id:'NB-10',type:'постанова',num:'КМУ № 345 (2015)',name:'Постачання ОВТ в умовах особливого/воєнного стану',desc:'Прискорений допуск; відомчі випробування замість держвипробувань',stages:'S03;S04;S05;S07',variants:'PV-02;PV-05',link:'#'},
+{id:'NB-11',type:'постанова',num:'КМУ № 159 (2021)',name:'Порядок проведення випробувань зразків ОВТ',desc:'Попередні та держвипробування: склад комісії, програма, акт',stages:'S04',variants:'PV-01;PV-04;PV-05',link:'#'},
+{id:'NB-12',type:'постанова',num:'КМУ № 160 (2021)',name:'Випробування та прийняття на озброєння іноземних зразків',desc:'Адаптаційні випробування іноземного ОВТ',stages:'S04;S05',variants:'PV-03',link:'#'},
+{id:'NB-13',type:'постанова',num:'КМУ № 781 (2021)',name:'Контроль якості товарів ОП на всіх етапах',desc:'Контроль якості від розробки до виробництва (військпред / ВКВП)',stages:'S03;S07',variants:'PV-01–PV-05',link:'#'},
+{id:'NB-14',type:'постанова',num:'КМУ № 452 (2025)',name:'Держгарантування якості товарів ОП',desc:'Нова редакція держгарантування якості серійної продукції',stages:'S07',variants:'PV-01–PV-03',link:'#'},
+{id:'NB-15',type:'постанова',num:'КМУ № 135 (2015)',name:'Ремонт, модернізація, продовження строку служби ОВТ',desc:'Ремонт і модернізація в процесі експлуатації',stages:'S08;S09',variants:'PV-01–PV-04',link:'#'},
+{id:'NB-16',type:'постанова',num:'КМУ № 309 (2021)',name:'Формування очікуваної вартості ОП (неконкурентна)',desc:'Формування ціни: витрати, прибуток виконавця, коригування',stages:'S07;S08;S09',variants:'PV-01–PV-05',link:'#'},
+{id:'NB-17',type:'постанова',num:'КМУ № 1070 (2019)',name:'Попередня оплата ОП за бюджетні кошти',desc:'Авансування за держконтрактами до 24 місяців',stages:'S02;S07',variants:'PV-01–PV-05',link:'#'},
+{id:'NB-18',type:'постанова',num:'КМУ № 1275 (2022)',name:'Особливості ОЗ (БПЛА та РЕБ, воєнний стан)',desc:'Спрощений порядок закупівлі та допуску БПЛА і РЕБ',stages:'S04;S05;S07',variants:'PV-02;PV-05',link:'#'},
+{id:'NB-19',type:'наказ',num:'Наказ МОУ № 576 (2024)',name:'Інструкція з організації проведення випробувань ОВТ',desc:'Деталізовані вимоги до організації та проведення випробувань',stages:'S04',variants:'PV-01–PV-04',link:'#'},
+{id:'NB-20',type:'наказ',num:'Наказ МОУ № 673 (2017)',name:'Порядок кодифікації предметів постачання',desc:'Кодифікація ОВТ за стандартами НАТО (NSN)',stages:'S05',variants:'PV-01–PV-03',link:'#'},
+{id:'NB-21',type:'наказ',num:'Наказ МОУ № 300',name:'Положення про військове господарство ЗСУ',desc:'Планування ТО, зберігання, безпечна експлуатація',stages:'S08',variants:'PV-01–PV-04',link:'#'},
+{id:'NB-22',type:'дсту',num:'ДСТУ В 15.201:2022',name:'Система керування ЖЦ ОВТ — ТТЗ на ДКР',desc:'Вимоги до структури та змісту ТТЗ',stages:'S02',variants:'PV-01;PV-04;PV-05',link:'#'},
+{id:'NB-23',type:'дсту',num:'ДСТУ В 15.210:2023',name:'Випробування ОВТ — Основні положення',desc:'Класифікація та загальні правила проведення випробувань',stages:'S04',variants:'PV-01–PV-05',link:'#'},
+{id:'NB-24',type:'дсту',num:'ДСТУ В 15.211:2023',name:'Програми і методики випробувань ОВТ',desc:'Вимоги до розробки ПМВ',stages:'S04',variants:'PV-01–PV-05',link:'#'},
+{id:'NB-25',type:'дсту',num:'ДСТУ В 15.301:2023',name:'Поставлення на виробництво ОВТ',desc:'Технологічна підготовка серійного виробництва',stages:'S06',variants:'PV-01;PV-04',link:'#'},
+{id:'NB-26',type:'дсту',num:'ДСТУ В 15.501:2021',name:'Документи експлуатаційні і ремонтні на ОВТ',desc:'Склад та вимоги до експлуатаційної документації',stages:'S08',variants:'PV-01–PV-04',link:'#'},
+{id:'NB-27',type:'дсту',num:'ДСТУ В 15.703:2021',name:'Рекламаційна робота щодо ОВТ',desc:'Порядок подання та розгляду рекламацій',stages:'S08;S09',variants:'PV-01–PV-04',link:'#'},
+{id:'NB-28',type:'дсту',num:'ДСТУ В 15.705:2022',name:'ЗІП до ОВТ — вимоги',desc:'Запасні частини, інструменти та приладдя',stages:'S07;S08',variants:'PV-01–PV-04',link:'#'},
+{id:'NB-29',type:'дсту',num:'ДСТУ В 15.902:2023',name:'Система керування ЖЦ ОВТ — Конструкторська документація',desc:'Розробка, облік та зберігання КД',stages:'S03;S06',variants:'PV-01;PV-04',link:'#'},
+{id:'NB-30',type:'нато',num:'ACodP-1 / ACodP-2',name:'NATO Manual on Codification',desc:'Керівний документ НАТО з кодифікації, процедури NSN',stages:'S05',variants:'PV-01;PV-02;PV-03',link:'#'},
+{id:'NB-31',type:'нато',num:'STANAG 3150/3151/4177/4199/4438',name:'Стандарти системи кодифікації НАТО',desc:'Ідентифікація, класифікація, номенклатура ОВТ',stages:'S05',variants:'PV-01–PV-03',link:'#'}
+];
+
+// ─── STATUSES ───
+const STATUSES=[
+{id:'ST-01',name:'Потреба ідентифікована',desc:'Виявлено прогалину; ОВТ ще не існує як об\'єкт ЖЦ',clr:'#5a9fd4',next:['ST-02','ST-00'],trigger:'Підписання ART-001 — Аналітична записка',artifact:'ART-001',role:'ГШ ЗСУ'},
+{id:'ST-02',name:'Потреба у плані ОЗ',desc:'Включено до плану оборонних закупівель та бюджету',clr:'#4db8c4',next:['ST-03','ST-00'],trigger:'Затвердження плану ОЗ з включенням потреби',artifact:'ART-002',role:'МОУ / ДК ОВТ'},
+{id:'ST-03',name:'ТТЗ на погодженні',desc:'Розробка або процес погодження ТТЗ між стейкхолдерами',clr:'#48b896',next:['ST-04','ST-02','ST-00'],trigger:'Направлення проекту ТТЗ на погодження та НТЕ',artifact:'Проект ТТЗ',role:'МОУ / ДК ОВТ'},
+{id:'ST-04',name:'ДКР виконується',desc:'Активне виконання ДКР: аванпроект → прототип',clr:'#c9a84c',next:['ST-05','ST-03','ST-00'],trigger:'Підписання держконтракту на ДКР + перерахування авансу',artifact:'ART-003 — Держконтракт ДКР',role:'Підприємство-розробник'},
+{id:'ST-05',name:'Прототип на випробуваннях',desc:'Дослідний зразок переданий Держкомісії для держвипробувань',clr:'#d97c4a',next:['ST-06','ST-04'],trigger:'Акт попереднього приймання дослідного зразка',artifact:'ART-004 — Дослідний зразок',role:'Держкомісія'},
+{id:'ST-06',name:'Держвипробування пройдено',desc:'Позитивний акт; рекомендовано до прийняття на озброєння',clr:'#9c71d8',next:['ST-07','ST-04'],trigger:'Підписання Акту держвипробувань (позитивний)',artifact:'ART-005 — Акт держвипробувань',role:'Голова Держкомісії'},
+{id:'ST-07',name:'Прийнято на озброєння',desc:'Наказ МОУ виданий; ОВТ має офіційний правовий статус',clr:'#48b896',next:['ST-08'],trigger:'Підписання та публікація Наказу МОУ',artifact:'ART-006 — Наказ МОУ',role:'Міністр оборони'},
+{id:'ST-08',name:'У серійному виробництві',desc:'ОВТ виробляється серійно та постачається до ЗСУ',clr:'#d85a5a',next:['ST-09'],trigger:'Підписання держконтракту на серійне виробництво',artifact:'ART-007 — Держконтракт серійне в-во',role:'Виробник / ДК ОВТ'},
+{id:'ST-09',name:'В експлуатації (Бойова готовність)',desc:'ОВТ передано до підрозділів та перебуває у бойовому складі',clr:'#48b896',next:['ST-10','ST-11','ST-12'],trigger:'Підписання Акту приймання-передачі до підрозділу',artifact:'ART-008 — Акт приймання-передачі',role:'Командир підрозділу'},
+{id:'ST-10',name:'На ТО або ремонті',desc:'Тимчасово виведено для обслуговування або ремонту',clr:'#c9a84c',next:['ST-09','ST-12'],trigger:'Направлення до ремонтного підрозділу',artifact:'Акт передачі на ремонт',role:'Служба озброєння'},
+{id:'ST-11',name:'На модернізації',desc:'Передано на підприємство для виконання робіт',clr:'#9c71d8',next:['ST-05','ST-09'],trigger:'Підписання контракту на модернізацію',artifact:'Контракт на модернізацію',role:'ДК ОВТ / Виробник'},
+{id:'ST-12',name:'Підготовка до списання',desc:'Виявлено непридатний стан; комісія приймає рішення',clr:'#d97c4a',next:['ST-13','ST-09'],trigger:'Висновок технічної комісії про непридатність',artifact:'Висновок комісії',role:'Служба озброєння / Комісія'},
+{id:'ST-13',name:'Списано — Кінець ЖЦ',desc:'Знято з балансу; передано на утилізацію або реалізовано',clr:'#4d6080',next:[],trigger:'Підписання акту списання',artifact:'ART-010 + ART-011',role:'Фінансова служба / МОУ'},
+{id:'ST-00',name:'Відхилено / Скасовано',desc:'Потреба відхилена або ДКР припинена на будь-якому etапі',clr:'#d85a5a',next:['ST-01'],trigger:'Рішення МОУ про відхилення або припинення',artifact:'Наказ МОУ або Протокол рішення',role:'МОУ / ДК ОВТ'}
+];
+
+// ─── VARIANTS ───
+const VARIANTS=[
+{id:'PV-01',clr:'#5a9fd4',name:'Стандартний ДКР — Повний цикл',badge:'STANDARD',
+ desc:'Повний lifecycle від ініціації потреби через ДКР, держвипробування до серійного виробництва та списання. Базовий сценарій для нових вітчизняних зразків ОВТ.',
+ route:[{id:'S01',t:'norm'},{id:'S02',t:'norm'},{id:'S03',t:'norm'},{id:'S04',t:'norm'},{id:'S05',t:'norm'},{id:'S06',t:'norm'},{id:'S07',t:'norm'},{id:'S08',t:'norm'},{id:'S09',t:'opt'},{id:'S10',t:'norm'}],
+ mandatory:['S01','S02','S03','S04','S05','S06','S07','S08','S10'],
+ optional:['S09'],skipped:[],parallel:[],
+ duration:'3–10+ років',
+ conditions:'Базовий сценарій. Держвипробування обов\'язкові (КМУ № 159). Повний документальний цикл.',
+ ovtTypes:'Нові вітчизняні зразки ОВТ всіх класів',
+ norms:['NB-01 — Закон № 808-IX','NB-07 — КМУ № 234','NB-08 — КМУ № 363','NB-11 — КМУ № 159'],
+ docChain:'ART-001 → ART-002 → ART-003 → ART-004 → ART-005 → ART-006 → ART-007 → ART-008 → [ART-009] → ART-010 → ART-011',
+ rollbacks:['S04 → S03 — негативний акт держвипробувань','S03 → S02 — нереалістичне ТТЗ']},
+{id:'PV-02',clr:'#d97c4a',name:'Спрощений допуск — Воєнний стан',badge:'WARTIME',
+ desc:'Прискорений цикл для БПЛА, РЕБ та боєприпасів в умовах воєнного стану. Замість держвипробувань — відомчі. S06 скорочується або пропускається.',
+ route:[{id:'S01',t:'norm'},{id:'S02',t:'fast'},{id:'S03',t:'norm'},{id:'S04',t:'fast'},{id:'S05',t:'fast'},{id:'S06',t:'skip'},{id:'S07',t:'norm'},{id:'S08',t:'norm'},{id:'S10',t:'norm'}],
+ mandatory:['S01','S02','S03','S04','S05','S07','S08','S10'],
+ optional:['S06 (скорочено)'],skipped:['S06 — Підготовка серійного виробництва'],parallel:[],
+ duration:'6–18 місяців',
+ conditions:'ЛИШЕ під час воєнного стану або НС. Відомчі випробування по КМУ № 345.',
+ ovtTypes:'БПЛА тактичного рівня; РЕБ; боєприпаси нагальної потреби',
+ norms:['NB-10 — КМУ № 345','NB-18 — КМУ № 1275 (БПЛА/РЕБ)'],
+ docChain:'ART-001 → ART-002 → ART-003* → ART-004 → [Акт відомчих випр.] → ART-006 → ART-007 → ART-008 → ART-010 → ART-011',
+ rollbacks:['S04 → S03 — відомчі випробування не пройдено']},
+{id:'PV-03',clr:'#5abec8',name:'Іноземний зразок — Імпорт',badge:'IMPORT',
+ desc:'Закупівля та введення іноземного ОВТ без вітчизняного ДКР. Адаптаційні випробування + дозволи ДСЕК. S02, S03, S06 пропускаються.',
+ route:[{id:'S01',t:'norm'},{id:'S02',t:'skip'},{id:'S03',t:'skip'},{id:'S04',t:'fast'},{id:'S05',t:'norm'},{id:'S06',t:'skip'},{id:'S07',t:'norm'},{id:'S08',t:'norm'},{id:'S09',t:'opt'},{id:'S10',t:'norm'}],
+ mandatory:['S01','S04','S05','S07','S08','S10'],
+ optional:['S09'],skipped:['S02 — ТТЗ на ДКР','S03 — Розробка/ДКР','S06 — Підготовка виробництва'],parallel:[],
+ duration:'6–24 місяці',
+ conditions:'Обов\'язкові дозволи ДСЕК (Закон № 549-15). End-User Certificate. NSN кодифікація.',
+ ovtTypes:'Імпортне ОВТ від союзників та партнерів України',
+ norms:['NB-12 — КМУ № 160','NB-04 — Закон № 549-15 (ДСЕК)','NB-30 — ACodP-1/2'],
+ docChain:'ART-001 → [Дозвіл ДСЕК + EUC] → [Акт адапт. випр.] → ART-006 → ART-007 → ART-008 → ART-010 → ART-011',
+ rollbacks:['S04 → відмова від зразка (непридатний для умов України)']},
+{id:'PV-04',clr:'#48b896',name:'Модернізація існуючого зразка',badge:'UPGRADE',
+ desc:'Покращення ОВТ на озброєнні без повного ДКР. СТАРТУЄ З S09 — аналізу даних експлуатації. Повертається до S04 для повторних держвипробувань.',
+ route:[{id:'S09',t:'norm'},{id:'S02',t:'fast'},{id:'S03',t:'fast'},{id:'S04',t:'norm'},{id:'S05',t:'fast'},{id:'S07',t:'norm'},{id:'S08',t:'norm'}],
+ mandatory:['S09','S02','S03','S04','S05','S07','S08'],
+ optional:['S06 (якщо в-во вже готове)'],skipped:['S01 — замінено рішенням S09','S06 — зазвичай не потрібно'],parallel:[],
+ duration:'1–3 роки',
+ conditions:'Стартує з S09, не з S01. Потребує Акту дефектації. Повторні держвипробування — обов\'язкові.',
+ ovtTypes:'ОВТ на озброєнні: бронетехніка, артилерія, авіація, флот',
+ norms:['NB-15 — КМУ № 135','NB-07 — КМУ № 234','NB-22 — ДСТУ В 15.201:2022'],
+ docChain:'ART-009 → Акт дефектації → Нове ТТЗ → ART-004 → Акт повт. випр. → ART-006 → ART-007 → ART-008',
+ rollbacks:['S04 → S03 — негативні повторні випробування']},
+{id:'PV-05',clr:'#d85a5a',name:'Fast Track / Experimental',badge:'FAST TRACK',
+ desc:'Паралельний прискорений цикл для критичних потреб. S03 і S04 виконуються паралельно. Скорочені вимоги до документації.',
+ route:[{id:'S01',t:'norm'},{id:'S02',t:'fast'},{id:'S03',t:'para'},{id:'S04',t:'para'},{id:'S05',t:'fast'},{id:'S07',t:'norm'},{id:'S08',t:'norm'}],
+ mandatory:['S01','S02','S03','S04','S05','S07','S08'],
+ optional:['S06 (паралельно з S07)'],skipped:['Частина S02 — скорочена документація'],
+ parallel:['S03 та S04 — паралельне виконання'],
+ duration:'3–12 місяців',
+ conditions:'Паралельне S03||S04. Підвищені ризики. Спеціальні рішення РНБО/КМУ.',
+ ovtTypes:'Критичні БПЛА-камікадзе; РЕБ нового покоління; термінові потреби поля бою',
+ norms:['NB-10 — КМУ № 345','NB-18 — КМУ № 1275','Рішення РНБО/КМУ'],
+ docChain:'Рішення РНБО → Скорочене ТТЗ → [ДКР ∥ Випробування] → Прискорений допуск → ART-007 → ART-008',
+ rollbacks:['S04 → S03 — критичний дефект під час паралельних випробувань']}
+];
+
+// ─── OVT TYPES ───
+const OVT=[
+{id:'OVT-01',emoji:'🔫',name:'Стрілецька зброя та боєприпаси',cat:'Стрілецьке озброєння',clr:'#5a9fd4',variants:['PV-01','PV-02','PV-03'],desc:'Пістолети, автомати, кулемети, снайперські гвинтівки, гранатомети, боєприпаси'},
+{id:'OVT-02',emoji:'💥',name:'Артилерійські системи та боєприпаси',cat:'Артилерія / РСЗВ',clr:'#d97c4a',variants:['PV-01','PV-02','PV-03','PV-04'],desc:'Гармати, гаубиці, міномети, РСЗВ та засоби управління вогнем'},
+{id:'OVT-03',emoji:'🛡️',name:'Бронетанкова техніка (ББМ, танки)',cat:'Броньована техніка',clr:'#48b896',variants:['PV-01','PV-03','PV-04'],desc:'Танки, БТР, БМП, БМПТ, самохідні АУ та бронеавтомобілі'},
+{id:'OVT-04',emoji:'✈️',name:'Авіаційна техніка',cat:'Авіація',clr:'#9c71d8',variants:['PV-01','PV-03','PV-04'],desc:'Бойові літаки, вертольоти, авіаційне озброєння, бортове обладнання'},
+{id:'OVT-05',emoji:'🚁',name:'Безпілотні авіасистеми (БПЛА)',cat:'БПЛА / UAS',clr:'#5abec8',variants:['PV-01','PV-02','PV-05'],desc:'Розвідувальні, ударні та камікадзе БПЛА, наземні станції управління'},
+{id:'OVT-06',emoji:'📡',name:'Засоби РЕБ',cat:'Радіоелектронна боротьба',clr:'#c9a84c',variants:['PV-01','PV-02','PV-05'],desc:'Комплекси придушення, перешкод, розвідки РЕ спектру'},
+{id:'OVT-07',emoji:'🚀',name:'Ракетна зброя та комплекси',cat:'Ракетне озброєння',clr:'#d85a5a',variants:['PV-01','PV-03','PV-04'],desc:'ОТР, ЗРК, ПТРК, протикорабельні ракети'},
+{id:'OVT-08',emoji:'📻',name:'Засоби зв\'язку та управління (C4ISR)',cat:'Зв\'язок / АСУ',clr:'#48b896',variants:['PV-01','PV-02','PV-03','PV-05'],desc:'Радіостанції, захищений зв\'язок, АСУ, засоби РЕ розвідки'},
+{id:'OVT-09',emoji:'⚓',name:'Морська техніка',cat:'ВМС',clr:'#5a9fd4',variants:['PV-01','PV-03','PV-04'],desc:'Бойові кораблі, катери, НПА, морське озброєння'},
+{id:'OVT-10',emoji:'🔧',name:'Засоби інженерного забезпечення',cat:'Інженерні ОВТ',clr:'#9c71d8',variants:['PV-01','PV-03','PV-04'],desc:'Мостові комплекси, розмінувальна техніка, засоби мінування'},
+{id:'OVT-11',emoji:'🌐',name:'Зразок іноземного виробництва',cat:'Імпортне ОВТ',clr:'#5abec8',variants:['PV-03'],desc:'ОВТ від союзників: адаптаційні випробування → прийняття на постачання'}
+];
+
+// ─── ROLES ───
+const ROLES=[
+{id:'R-01',name:'МОУ — Керівництво',org:'Міністерство оборони України',raci:'A',desc:'Прийняття на озброєння; затвердження планів закупівель',stages:['S01','S02','S05','S07','S09','S10']},
+{id:'R-02',name:'Департамент кодифікації МОУ',org:'МОУ',raci:'R',desc:'Присвоєння NSN; кодифікаційні каталоги',stages:['S05']},
+{id:'R-03',name:'Держзамовник / ДК ОВТ',org:'МОУ / Підвідомча структура',raci:'R',desc:'Підписання контрактів; затвердження ТТЗ; акти приймання ДКР',stages:['S01','S02','S03','S04','S05','S06','S07','S09']},
+{id:'R-04',name:'Генеральний штаб ЗСУ',org:'ЗСУ — ГШ',raci:'A',desc:'Тактичні вимоги; затвердження складу Держкомісії',stages:['S01','S02','S04','S05']},
+{id:'R-05',name:'Командування видів ЗСУ',org:'ЗСУ — СВ / ПС / ВМС / ССО',raci:'C',desc:'Бойові вимоги; польові дані про якість',stages:['S01','S08','S09']},
+{id:'R-06',name:'Головна НДУ держзамовника',org:'ЦНДІ ОВТ ЗСУ або аналог',raci:'C',desc:'НТЕ ТТЗ; науковий супровід держвипробувань',stages:['S02','S04']},
+{id:'R-07',name:'Підприємство-розробник (КБ)',org:'ОПК — Виконавець ДКР',raci:'R',desc:'ДКР; захист аванпроекту; здача дослідного зразка',stages:['S02','S03','S04']},
+{id:'R-08',name:'Підприємство-виробник',org:'ОПК — Серійний виробник',raci:'R',desc:'Серійне виробництво; передача ОВТ; гарантійне обслуговування',stages:['S06','S07','S08']},
+{id:'R-09',name:'Державна комісія з випробувань',org:'МОУ + ГШ + Командування',raci:'R',desc:'Підписання Акту держвипробувань; рекомендація прийняття',stages:['S04']},
+{id:'R-10',name:'Органи держгарантування якості',org:'МОУ — Військпред / ВКВП',raci:'R',desc:'Акти приймання серійної продукції; рекламації',stages:['S07','S08']},
+{id:'R-11',name:'Командири підрозділів та техперсонал',org:'ЗСУ — Підрозділи',raci:'R',desc:'Акти ТО; рекламаційні акти; акти списання',stages:['S08','S09','S10']},
+{id:'R-12',name:'Міністерство фінансів',org:'КМУ — Мінфін',raci:'A',desc:'Погодження кошторисів; реєстрація фінансових зобов\'язань',stages:['S01','S02','S07']},
+{id:'R-13',name:'Держ. служба експортного контролю (ДСЕК)',org:'КМУ — ДСЕК',raci:'A',desc:'Дозволи на імпорт/передачу технологій',stages:['S03','S09']},
+{id:'R-14',name:'Підприємства-утилізатори',org:'Спеціалізовані підприємства',raci:'R',desc:'Знищення/переробка ОВТ та боєприпасів',stages:['S10']}
+];
+
+// ─── DOCUMENT FLOWS (for DLE) ───
+const DOC_FLOWS=[
+{id:'dkr',name:'PV-01 — Стандартний ДКР',variant:'PV-01',clr:'#5a9fd4',
+ desc:'Повний документальний ланцюг від ART-001 до ART-011. Всі 11 артефактів. 10 stages.',
+ chain:[
+  {art:'ART-001',stage:'S01',req:true,prepBy:'ГШ ЗСУ',signBy:'Нач. ГШ',approveBy:'Нач. ГШ',desc:'Аналітична записка — стартовий документ lifecycle'},
+  {art:'ART-002',stage:'S01→S02',req:true,prepBy:'ДК ОВТ',signBy:'Міністр',approveBy:'МОУ+Мінфін',desc:'Обґрунтування потреби — включення до плану ОЗ'},
+  {art:'ART-003',stage:'S02',req:true,prepBy:'ДК ОВТ + НДУ',signBy:'Гол. ДК ОВТ',approveBy:'НТЕ НДУ + НТР МОУ',desc:'ТТЗ — ключовий технічний документ'},
+  {art:'ART-004',stage:'S03',req:true,prepBy:'Розробник',signBy:'Розробник + Замовник',approveBy:'Держзамовник',desc:'Дослідний зразок — матеріальний результат ДКР'},
+  {art:'ART-005',stage:'S04',req:true,prepBy:'Секретар комісії',signBy:'Голова Держкомісії',approveBy:'Всі члени',desc:'Акт держвипробувань — юридична підстава для Наказу МОУ'},
+  {art:'ART-006',stage:'S05',req:true,prepBy:'ДК ОВТ + Юрвідділ',signBy:'Міністр оборони',approveBy:'Колегія МОУ',desc:'Наказ МОУ — офіційне прийняття на озброєння'},
+  {art:'ART-007',stage:'S07',req:true,prepBy:'ДК ОВТ',signBy:'Замовник + Виробник',approveBy:'Мінфін',desc:'Держконтракт — юридична підстава серійного виробництва'},
+  {art:'ART-008',stage:'S07→S08',req:true,prepBy:'МТЗ',signBy:'Виробник + Командир',approveBy:'Представник замовника',desc:'Акт приймання — перехід до статусу В експлуатації'},
+  {art:'ART-009',stage:'S08→S09',req:false,prepBy:'Техперсонал',signBy:'Командир + Виробник',approveBy:'Командир',desc:'Звіт / рекламації — збір польових даних (optional)'},
+  {art:'ART-010',stage:'S10',req:true,prepBy:'Комісія підрозділу',signBy:'Командир + Комісія',approveBy:'Командир + Ревізор',desc:'Акт списання — юридичне зняття з балансу'},
+  {art:'ART-011',stage:'S10',req:true,prepBy:'МОУ',signBy:'МОУ',approveBy:'МОУ',desc:'Рішення про утилізацію — кінець lifecycle'}
+]},
+{id:'wartime',name:'PV-02 — Спрощений (Воєнний стан)',variant:'PV-02',clr:'#d97c4a',
+ desc:'Скорочений ланцюг. Держвипробування замінені відомчими. S06 пропускається. ART-009 виключено.',
+ chain:[
+  {art:'ART-001',stage:'S01',req:true,prepBy:'ГШ ЗСУ',signBy:'Нач. ГШ',approveBy:'Нач. ГШ',desc:'Аналітична записка — стартовий документ'},
+  {art:'ART-002',stage:'S01→S02',req:true,prepBy:'ДК ОВТ',signBy:'Міністр',approveBy:'МОУ',desc:'Обґрунтування — прискорено'},
+  {art:'ART-003',stage:'S02',req:true,prepBy:'ДК ОВТ',signBy:'ДК ОВТ',approveBy:'Скорочена НТЕ',desc:'СКОРОЧЕНЕ ТТЗ — спрощені вимоги для воєнного стану'},
+  {art:'ART-004',stage:'S03',req:true,prepBy:'Розробник',signBy:'Розробник',approveBy:'Замовник',desc:'Прототип — без частини стадій'},
+  {art:'ART-005',stage:'S04*',req:true,prepBy:'Відомча комісія',signBy:'Гол. відомчої комісії',approveBy:'Члени комісії',desc:'АКТ ВІДОМЧИХ ВИПРОБУВАНЬ — замість держвипробувань (КМУ № 345)'},
+  {art:'ART-006',stage:'S05',req:true,prepBy:'ДК ОВТ',signBy:'Міністр',approveBy:'МОУ',desc:'Прискорений наказ МОУ — без проходження повної Колегії'},
+  {art:'ART-007',stage:'S07',req:true,prepBy:'ДК ОВТ',signBy:'Обидві сторони',approveBy:'Мінфін',desc:'Контракт на закупівлю'},
+  {art:'ART-008',stage:'S07→S08',req:true,prepBy:'Постачальник',signBy:'Постачальник+Командир',approveBy:'Представник',desc:'Передача підрозділу'},
+  {art:'ART-010',stage:'S10',req:true,prepBy:'Комісія',signBy:'Командир',approveBy:'Командир',desc:'Акт списання'}
+]},
+{id:'import',name:'PV-03 — Іноземний зразок',variant:'PV-03',clr:'#5abec8',
+ desc:'Без ДКР. Ключові документи: дозвіл ДСЕК та End-User Certificate. S02, S03, S06 відсутні.',
+ chain:[
+  {art:'ART-001',stage:'S01',req:true,prepBy:'ГШ ЗСУ',signBy:'Нач. ГШ',approveBy:'Нач. ГШ',desc:'Ідентифікація потреби'},
+  {art:'[Дозвіл ДСЕК]',stage:'S01→S04',req:true,prepBy:'МОУ / ДСЕК',signBy:'ДСЕК',approveBy:'КМУ',desc:'ДОЗВІЛ ДСЕК — обов\'язковий для будь-якого іноземного ОВТ (Закон № 549-15)'},
+  {art:'[End-User Certificate]',stage:'S01→S04',req:true,prepBy:'МОУ',signBy:'Міністр',approveBy:'МЗС',desc:'EUC — підтвердження кінцевого користувача для іноземного постачальника'},
+  {art:'ART-005*',stage:'S04*',req:true,prepBy:'Адапт. комісія',signBy:'Голова комісії',approveBy:'МОУ',desc:'АКТ АДАПТАЦІЙНИХ ВИПРОБУВАНЬ — замість ДКР+держвипробувань (КМУ № 160)'},
+  {art:'ART-006',stage:'S05',req:true,prepBy:'ДК ОВТ',signBy:'Міністр',approveBy:'МОУ',desc:'Наказ МОУ про прийняття на постачання'},
+  {art:'ART-007',stage:'S07',req:true,prepBy:'ДК ОВТ',signBy:'Обидві сторони',approveBy:'Мінфін',desc:'Контракт на закупівлю іноземного ОВТ'},
+  {art:'ART-008',stage:'S07→S08',req:true,prepBy:'Постачальник',signBy:'Постачальник+Командир',approveBy:'Представник',desc:'Передача підрозділу'},
+  {art:'ART-010',stage:'S10',req:true,prepBy:'Комісія',signBy:'Командир',approveBy:'Командир',desc:'Акт списання'}
+]},
+{id:'modernization',name:'PV-04 — Модернізація',variant:'PV-04',clr:'#48b896',
+ desc:'Починається з ART-009 та акту дефектації. Повертається через S04 для повторних випробувань.',
+ chain:[
+  {art:'ART-009',stage:'S08→S09',req:true,prepBy:'Служба озброєння',signBy:'Командир+Виробник',approveBy:'Командир',desc:'СТАРТ — рекламаційні акти та звіти з польової експлуатації'},
+  {art:'[Акт дефектації]',stage:'S09',req:true,prepBy:'КБ / Виробник',signBy:'КБ + Замовник',approveBy:'Держзамовник',desc:'Технічний акт, що визначає обсяг і вид модернізації'},
+  {art:'ART-003*',stage:'S02*',req:true,prepBy:'ДК ОВТ / КБ',signBy:'ДК ОВТ',approveBy:'НТЕ НДУ',desc:'НОВЕ ТТЗ НА МОДЕРНІЗАЦІЮ — на основі акту дефектації'},
+  {art:'ART-004*',stage:'S03*',req:true,prepBy:'КБ / Виробник',signBy:'Виробник+Замовник',approveBy:'Замовник',desc:'Модернізований зразок (прототип)'},
+  {art:'ART-005*',stage:'S04',req:true,prepBy:'Комісія',signBy:'Голова комісії',approveBy:'Члени',desc:'АКТ ПОВТОРНИХ ДЕРЖВИПРОБУВАНЬ — обов\'язкові при модернізації'},
+  {art:'ART-006*',stage:'S05*',req:true,prepBy:'ДК ОВТ',signBy:'Міністр',approveBy:'МОУ',desc:'Наказ МОУ про прийняття модернізованого зразка'},
+  {art:'ART-007',stage:'S07',req:true,prepBy:'ДК ОВТ',signBy:'Обидві сторони',approveBy:'Мінфін',desc:'Контракт на постачання модернізованих зразків'}
+]}
+];
+
+// ═══════════════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════════════
+const VIEWS={overview:'Lifecycle Overview',stages:'Lifecycle Stages',variants:'Process Variants',
+  artifacts:'Артефакти / Документи',docexplorer:'Document Lifecycle Explorer',
+  normative:'Нормативна База',statuses:'Status Machine',ovt:'Типи ОВТ',roles:'Ролі та RACI'};
+
+function go(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+  document.querySelectorAll('.nl').forEach(l=>l.classList.remove('on'));
+  document.getElementById('v-'+id).classList.add('on');
+  document.querySelectorAll('.nl').forEach(l=>{if(l.getAttribute('onclick')&&l.getAttribute('onclick').includes(`'${id}'`))l.classList.add('on')});
+  document.getElementById('tb-title').textContent=VIEWS[id]||id;
+  document.getElementById('tb-trail').textContent=VIEWS[id]||id;
+  // Lazy render
+  const lazy={stages:renderStages,variants:renderVariants,artifacts:renderArtifacts,
+    docexplorer:renderDLE,normative:()=>renderNorm('all'),statuses:renderStatuses,ovt:renderOVT,roles:renderRoles};
+  if(lazy[id]&&!document.getElementById('v-'+id).dataset.rendered){
+    lazy[id]();
+    document.getElementById('v-'+id).dataset.rendered='1';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CHIP HELPERS
+// ═══════════════════════════════════════════════════════════════
+const C=(txt,cls,onclick)=>`<span class="chip ${cls}" ${onclick?`onclick="${onclick}"`:''}>${txt}</span>`;
+const chips=(arr,cls,onclick)=>arr.map(a=>C(a,cls,onclick?onclick(a):null)).join('');
+
+// ═══════════════════════════════════════════════════════════════
+// STAGES
+// ═══════════════════════════════════════════════════════════════
+function renderStages(){
+  // Build pipeline
+  const g=document.getElementById('lc-graph');
+  g.innerHTML=STAGES.map((s,i)=>`
+    <div class="lc-node" id="lcn-${s.id}" style="--nc:${s.clr}" onclick="showStage('${s.id}')">
+      <div class="lc-ni">
+        <div class="lc-ni-id">${s.id}</div>
+        <div class="lc-ni-ico">${s.icon}</div>
+        <div class="lc-ni-name">${s.name}</div>
+        <div class="lc-ni-sla">${s.sla}</div>
+        <div class="lc-ni-badges">
+          ${s.decisionPoints.length?`<span class="lc-ni-badge badge-decision">◆ ${s.decisionPoints.length}</span>`:''}
+          ${s.rollbacks.length?`<span class="lc-ni-badge badge-rollback">↩</span>`:''}
+          ${s.skippedIn.length?`<span class="lc-ni-badge badge-rollback">skip</span>`:''}
+        </div>
+      </div>
+    </div>
+    ${i<STAGES.length-1?'<div class="lc-conn"><div class="lc-conn-line"></div></div>':''}
+  `).join('');
+
+  // Variant bars
+  const vb=document.getElementById('lc-vbars');
+  vb.innerHTML=STAGES.map((s,i)=>{
+    const cov=SVC[s.id]||[];
+    return `<div class="lc-vbar-cell">
+      ${['PV-01','PV-02','PV-03','PV-04','PV-05'].map(pv=>`<div class="lc-vbar ${cov.includes(pv)?'on':'off'}" style="background:${PVCLR[pv]}"></div>`).join('')}
+    </div>${i<STAGES.length-1?'<div class="lc-conn-sp"></div>':''}`;
+  }).join('');
+
+  showStage('S01');
+}
+
+function showStage(sid){
+  const s=STAGES.find(x=>x.id===sid);
+  if(!s)return;
+  document.querySelectorAll('.lc-node').forEach(n=>n.classList.remove('on'));
+  const el=document.getElementById('lcn-'+sid);
+  if(el){el.classList.add('on');el.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'})}
+
+  const nextSteps=s.next.map(ns=>{
+    const ns_=STAGES.find(x=>x.id===ns);
+    return ns_?C(`${ns_?.label||ns} →`,'ch-stage',`showStage('${ns}')`):C(ns,'ch-stage');
+  }).join('');
+
+  document.getElementById('stage-detail').innerHTML=`
+  <div class="sdp" style="--sdpc:${s.clr}">
+    <div class="sdp-bar"></div>
+    <div class="sdp-hdr">
+      <div class="sdp-id">${s.id} · LIFECYCLE STAGE</div>
+      <div class="sdp-name">${s.icon} ${s.label||s.name}</div>
+      <div class="sdp-purpose">${s.purpose}</div>
+    </div>
+    <div class="sdp-meta">
+      ${C('⏱ '+s.sla,'ch-status')}
+      ${s.variants.map(v=>C(v,'ch-variant',`go('variants')`)).join('')}
+      ${s.rollbacks.length?C('↩ '+s.rollbacks.length+' rollback','ch-risk'):''}
+      ${s.decisionPoints.length?C('◆ '+s.decisionPoints.length+' decision points','ch-decision'):''}
+      ${s.skippedIn.length?C('✗ skipped in: '+s.skippedIn.slice(0,2).join(', '),'ch-risk'):''}
+    </div>
+    <div class="sdp-body">
+      <div class="sdp-sec">
+        <div class="sdp-sec-t">▶ Start Trigger — що запускає etap</div>
+        <div class="sdp-text">${s.startTrigger}</div>
+      </div>
+      <div class="sdp-sec">
+        <div class="sdp-sec-t">■ End Condition — результат etапу</div>
+        <div class="sdp-text">${s.endCondition}</div>
+      </div>
+      <div class="sdp-sec">
+        <div class="sdp-sec-t">⇒ Наступні Etапи</div>
+        <div class="chips">${nextSteps||C('Кінець lifecycle','ch-status')}</div>
+      </div>
+      <div class="sdp-sec w3">
+        <div class="sdp-sec-t">◆ Decision Points — точки прийняття рішень</div>
+        ${s.decisionPoints.map(dp=>`
+          <div class="dp-block">
+            <div class="dp-hdr"><div class="dp-ico">◆</div><div class="dp-title">${dp.title}</div></div>
+            <div class="dp-desc">${dp.desc}</div>
+            <div class="dp-outcomes">${dp.outcomes.map(o=>C(o,o.includes('→')&&(o.toLowerCase().includes('rollback')||o.toLowerCase().includes('повернення')||o.toLowerCase().includes('негат')||o.toLowerCase().includes('відхил'))?'ch-risk':o.toLowerCase().includes('позит')||o.toLowerCase().includes('пройдено')||o.toLowerCase().includes('готовн')?'ch-optional':'ch-decision')).join('')}</div>
+          </div>
+        `).join('')}
+      </div>
+      ${s.rollbacks.length?`
+      <div class="sdp-sec w3">
+        <div class="sdp-sec-t">↩ Rollback Paths — шляхи повернення на доопрацювання</div>
+        ${s.rollbacks.map(rb=>`
+          <div class="rb-block">
+            <div class="rb-ico">↩</div>
+            <div><div class="rb-from">${rb.from} → ${rb.to}</div><div class="rb-reason">${rb.reason}</div></div>
+          </div>
+        `).join('')}
+      </div>`:''}
+      ${s.optionalPaths.length?`
+      <div class="sdp-sec w3">
+        <div class="sdp-sec-t">◎ Optional / Conditional Paths</div>
+        ${s.optionalPaths.map(op=>`<div class="op-block"><div class="op-label">◎ OPTIONAL</div>${op}</div>`).join('')}
+      </div>`:''}
+      <div class="sdp-sec">
+        <div class="sdp-sec-t">📥 Input Artifacts</div>
+        <div class="chips">${s.inputArtifacts.map(a=>`<span class="chip ch-artifact" onclick="go('artifacts');showArt('${a.split(' — ')[0]}')">${a}</span>`).join('')}</div>
+      </div>
+      <div class="sdp-sec">
+        <div class="sdp-sec-t">📤 Output Artifacts</div>
+        <div class="chips">${s.outputArtifacts.map(a=>`<span class="chip ch-artifact" onclick="go('artifacts');showArt('${a.split(' — ')[0]}')">${a}</span>`).join('')}</div>
+      </div>
+      <div class="sdp-sec">
+        <div class="sdp-sec-t">⚑ Типові Ризики</div>
+        <div class="chips">${s.risks.map(r=>C(r,'ch-risk')).join('')}</div>
+      </div>
+      <div class="sdp-sec w2">
+        <div class="sdp-sec-t">👥 Відповідальні Ролі</div>
+        <div class="chips">${s.roles.map(r=>C(r,'ch-role')).join('')}</div>
+      </div>
+      <div class="sdp-sec">
+        <div class="sdp-sec-t">§ Нормативна Підстава</div>
+        <div class="chips">${s.norms.map(n=>C(n,'ch-norm',`go('normative')`)).join('')}</div>
+      </div>
+      ${s.dependencies?`
+      <div class="sdp-sec w3">
+        <div class="sdp-sec-t">🔗 Dependencies — залежності та пресупозиції</div>
+        <div class="chips">${s.dependencies.map(d=>C(d,'ch-status')).join('')}</div>
+      </div>`:''}
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// VARIANTS
+// ═══════════════════════════════════════════════════════════════
+function renderVariants(){
+  document.getElementById('pv-grid').innerHTML=VARIANTS.map(v=>`
+    <div class="pv-card" style="--pvc:${v.clr}" id="pvc-${v.id}" onclick="showVariant('${v.id}')">
+      <div class="pv-card-topbar"></div>
+      <div class="pv-card-body">
+        <div class="pv-card-id">${v.id} · ${v.badge}</div>
+        <div class="pv-card-name">${v.name}</div>
+        <div class="pv-card-desc">${v.desc}</div>
+        <div class="pv-route">
+          ${v.route.map((step,i)=>`
+            ${i>0?'<span class="pv-rarrow">→</span>':''}
+            <span class="rs ${step.t==='norm'?'norm':step.t==='fast'?'fast':step.t==='skip'?'skip':step.t==='para'?'para':'opt'}">${step.id}${step.t==='skip'?'✗':step.t==='para'?'∥':step.t==='fast'?'*':step.t==='opt'?'?':''}</span>
+          `).join('')}
+        </div>
+        ${v.skipped.length?`<div style="font-family:var(--f-mono);font-size:8px;color:var(--c-rollback);margin-top:7px">✗ ${v.skipped.slice(0,2).join(' · ')}</div>`:''}
+        ${v.parallel.length?`<div style="font-family:var(--f-mono);font-size:8px;color:var(--c-decision);margin-top:3px">∥ ${v.parallel[0]}</div>`:''}
+      </div>
+    </div>
+  `).join('');
+  renderVariantCompare();
+  showVariant('PV-01');
+}
+
+function showVariant(pvId){
+  const v=VARIANTS.find(x=>x.id===pvId);
+  if(!v)return;
+  document.querySelectorAll('.pv-card').forEach(c=>c.classList.remove('on'));
+  const card=document.getElementById('pvc-'+pvId);
+  if(card)card.classList.add('on');
+
+  document.getElementById('pv-detail').innerHTML=`
+  <div class="pvd" style="--pvdc:${v.clr}">
+    <div class="pvd-bar"></div>
+    <div class="pvd-hdr">
+      <div class="pvd-id">${v.id} · ${v.badge}</div>
+      <div class="pvd-name">${v.name}</div>
+      <div class="pvd-desc">${v.desc}</div>
+    </div>
+    <div class="pvd-body">
+      <div class="pvd-sec">
+        <div class="pvd-sec-t">⏱ Тривалість</div>
+        <div style="font-family:var(--f-mono);font-size:14px;color:var(--tx-hi)">${v.duration}</div>
+      </div>
+      <div class="pvd-sec">
+        <div class="pvd-sec-t">⊞ Типи ОВТ</div>
+        <div style="font-size:12px;color:var(--tx-mid)">${v.ovtTypes}</div>
+      </div>
+      <div class="pvd-sec">
+        <div class="pvd-sec-t">⚑ Умови застосування</div>
+        <div style="font-size:12px;color:var(--tx-mid)">${v.conditions}</div>
+      </div>
+      <div class="pvd-sec">
+        <div class="pvd-sec-t">✓ Mandatory Stages</div>
+        <div class="chips">${v.mandatory.map(s=>{const sd=STAGES.find(x=>x.id===s);return C(sd?sd.label:s,'ch-stage',`showStage('${s}')`)}).join('')}</div>
+      </div>
+      <div class="pvd-sec">
+        <div class="pvd-sec-t">✗ Skipped / Пропускаються</div>
+        ${v.skipped.length?`<div class="chips">${v.skipped.map(s=>C(s,'ch-risk')).join('')}</div>`:'<div style="font-size:11px;color:var(--tx-lo)">Немає пропущених stages</div>'}
+      </div>
+      <div class="pvd-sec">
+        <div class="pvd-sec-t">∥ Parallel / Паралельні</div>
+        ${v.parallel.length?`<div class="chips">${v.parallel.map(s=>C(s,'ch-decision')).join('')}</div>`:'<div style="font-size:11px;color:var(--tx-lo)">Немає паралельних stages</div>'}
+      </div>
+      <div class="pvd-sec w2">
+        <div class="pvd-sec-t">§ Нормативна База</div>
+        <div class="chips">${v.norms.map(n=>C(n,'ch-norm')).join('')}</div>
+      </div>
+      <div class="pvd-sec">
+        <div class="pvd-sec-t">↩ Rollback Paths</div>
+        ${v.rollbacks.length?`<div class="chips">${v.rollbacks.map(r=>C(r,'ch-risk')).join('')}</div>`:'<div style="font-size:11px;color:var(--tx-lo)">—</div>'}
+      </div>
+      <div class="pvd-sec w3">
+        <div class="pvd-sec-t">📄 Document Chain для цього Variant</div>
+        <div style="font-family:var(--f-mono);font-size:10.5px;color:var(--tx-mid);line-height:1.6">${v.docChain}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderVariantCompare(){
+  const rows=[
+    ['Маршрут',     ...VARIANTS.map(v=>v.route.length+' stages')],
+    ['Тривалість',  ...VARIANTS.map(v=>v.duration)],
+    ['ДКР (S03)',   ...VARIANTS.map(v=>['PV-01','PV-02','PV-04','PV-05'].includes(v.id)?'✓ Так':'✗ Ні')],
+    ['Держвипробування', ...VARIANTS.map(v=>v.id==='PV-02'?'Відомчі (КМУ 345)':v.id==='PV-03'?'Адаптаційні (КМУ 160)':'Повні (КМУ 159)')],
+    ['Підготовка в-ва', ...VARIANTS.map(v=>v.id==='PV-01'||v.id==='PV-04'?'✓ Обов\'язково':v.id==='PV-02'?'◎ Опціонально':'✗ Не вимагається')],
+    ['Пропущені',   ...VARIANTS.map(v=>v.skipped.length?v.skipped.length+' stages':'—')],
+    ['Паралельні',  ...VARIANTS.map(v=>v.parallel.length?v.parallel[0]:'—')],
+    ['Старт',       ...VARIANTS.map(v=>v.id==='PV-04'?'S09 (Аналіз/Модернізація)':'S01 (Ініціація)')]
+  ];
+  document.getElementById('cmp-table').innerHTML=`
+  <thead><tr>
+    <th>Параметр</th>
+    ${VARIANTS.map(v=>`<th style="color:${v.clr};background:${v.clr}12">${v.id}<br><span style="font-size:7.5px;font-weight:400">${v.badge}</span></th>`).join('')}
+  </tr></thead>
+  <tbody>${rows.map(row=>`<tr>
+    ${row.map((c,i)=>`<td style="${i===0?'font-family:var(--f-mono);font-size:9px;color:var(--tx-lo);background:var(--s2)':''}${c==='✓ Так'||c==='✓ Обов\'язково'?';color:var(--c-artifact)':c.startsWith('✗')?';color:var(--c-rollback)':''}">${c}</td>`).join('')}
+  </tr>`).join('')}</tbody>`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ARTIFACTS
+// ═══════════════════════════════════════════════════════════════
+function renderArtifacts(){
+  document.getElementById('art-grid').innerHTML=ARTIFACTS.map(a=>`
+    <div style="background:var(--s1);border:1px solid var(--wire-0);border-radius:var(--r-lg);padding:12px;cursor:pointer;transition:all .18s;position:relative;overflow:hidden"
+         id="artc-${a.id}" onclick="showArt('${a.id}')"
+         onmouseenter="this.style.borderColor='rgba(72,184,150,.35)'" onmouseleave="this.style.borderColor='rgba(80,140,220,.06)'">
+      <div style="font-family:var(--f-mono);font-size:7.5px;color:var(--c-artifact);letter-spacing:.1em;margin-bottom:4px">${a.id} · ${a.stage}</div>
+      <div style="font-family:var(--f-mono);font-size:10.5px;color:var(--tx-hi);margin-bottom:5px;line-height:1.3">${a.name}</div>
+      <div class="chips">
+        ${C(a.type,'ch-artifact')}
+        ${a.mandatory?C('MANDATORY','ch-stage'):C('OPTIONAL','ch-status')}
+      </div>
+    </div>
+  `).join('');
+  showArt('ART-001');
+}
+
+function showArt(artId){
+  const a=ARTIFACTS.find(x=>x.id===artId);
+  if(!a)return;
+  document.querySelectorAll('[id^="artc-"]').forEach(c=>c.style.borderColor='');
+
+  // Build lineage
+  const all=ARTIFACTS;
+  const parents=all.filter(x=>x.generates.some(g=>g.startsWith(artId)));
+  const children=a.generates.filter(g=>g.startsWith('ART'));
+  const linBoxes=[
+    ...parents.slice(-2).map(p=>`<div class="lin-box" onclick="showArt('${p.id}')">${p.id}<div class="lin-box-sub">${p.name.slice(0,22)}...</div></div><span class="lin-arrow">→</span>`),
+    `<div class="lin-box cur">${a.id}<div class="lin-box-sub">${a.name.slice(0,22)}...</div></div>`,
+    ...children.map(cid=>{const ca=all.find(x=>x.id===cid);return ca?`<span class="lin-arrow">→</span><div class="lin-box" onclick="showArt('${cid}')">${cid}<div class="lin-box-sub">${ca.name.slice(0,22)}...</div></div>`:''})
+  ];
+
+  document.getElementById('art-detail').innerHTML=`
+  <div class="ard">
+    <div class="ard-bar"></div>
+    <div class="ard-hdr">
+      <div class="ard-id">${a.id} · ${a.stage} · ${a.type}</div>
+      <div class="ard-name">${a.label||a.name}</div>
+      <div class="ard-purpose">${a.purpose}</div>
+    </div>
+    <div style="padding:12px 18px;background:var(--s2);border-bottom:1px solid var(--wire-0)">
+      <div style="font-family:var(--f-mono);font-size:7.5px;color:var(--tx-lo);letter-spacing:.12em;margin-bottom:7px">DOCUMENT LINEAGE — ланцюг документів</div>
+      <div class="lineage">${linBoxes.join('')}</div>
+    </div>
+    <div class="ard-body">
+      <div class="ard-sec"><div class="ard-sec-t">✏️ Хто ініціює</div><div class="ard-val">${a.initiatedBy}</div></div>
+      <div class="ard-sec"><div class="ard-sec-t">📝 Хто готує</div><div class="ard-val">${a.preparedBy}</div></div>
+      <div class="ard-sec"><div class="ard-sec-t">✅ Хто погоджує</div><div class="ard-val">${a.approvedBy}</div></div>
+      <div class="ard-sec"><div class="ard-sec-t">✍️ Хто підписує</div><div class="ard-val">${a.signedBy}</div></div>
+      <div class="ard-sec"><div class="ard-sec-t">📨 Кому передається</div><div class="ard-val">${a.transferredTo}</div></div>
+      <div class="ard-sec"><div class="ard-sec-t">🔗 Де використовується далі</div><div class="ard-val">${a.usedIn}</div></div>
+      <div class="ard-sec w2"><div class="ard-sec-t">▶ Trigger створення</div><div class="ard-val">${a.creationTrigger}</div></div>
+      <div class="ard-sec"><div class="ard-sec-t">■ Завершує Stage</div><div class="ard-val">${a.stageCompletion}</div></div>
+      <div class="ard-sec w2">
+        <div class="ard-sec-t">📤 Які документи породжує</div>
+        <div class="chips">${a.generates.length?a.generates.map(g=>{const ga=ARTIFACTS.find(x=>x.id===g.split(' — ')[0]);return `<span class="chip ch-artifact" ${ga?`onclick="showArt('${ga.id}')"`:''}>${g}</span>`}).join(''):`<span style="font-family:var(--f-mono);font-size:9px;color:var(--tx-lo)">Термінальний документ</span>`}</div>
+      </div>
+      <div class="ard-sec">
+        <div class="ard-sec-t">⑂ Process Variants</div>
+        <div class="chips">${a.variants.map(v=>C(v,'ch-variant',`go('variants')`)).join('')}</div>
+      </div>
+      <div class="ard-sec w3"><div class="ard-sec-t">§ Нормативна основа</div><div class="ard-val">${a.norm}</div></div>
+      ${a.rollbackUsage&&a.rollbackUsage!=='—'?`<div class="ard-sec w3"><div class="ard-sec-t">↩ Роль у Rollback</div><div class="ard-val">${a.rollbackUsage}</div></div>`:''}
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DOCUMENT LIFECYCLE EXPLORER
+// ═══════════════════════════════════════════════════════════════
+function renderDLE(){
+  const nav=document.getElementById('dle-nav');
+  nav.innerHTML=DOC_FLOWS.map((f,i)=>`
+    <div class="dle-nitem ${i===0?'on':''}" id="dlenav-${f.id}" onclick="showDLE('${f.id}')">${f.name}</div>
+  `).join('');
+  showDLE(DOC_FLOWS[0].id);
+}
+
+function showDLE(fid){
+  const f=DOC_FLOWS.find(x=>x.id===fid);
+  if(!f)return;
+  document.querySelectorAll('.dle-nitem').forEach(n=>n.classList.remove('on'));
+  document.getElementById('dlenav-'+fid).classList.add('on');
+
+  document.getElementById('dle-content').innerHTML=`
+  <div class="dle-flow-card">
+    <div class="dle-fhdr">
+      <div style="width:4px;height:20px;background:${f.clr};border-radius:2px;flex-shrink:0"></div>
+      <div>
+        <div style="font-family:var(--f-mono);font-size:8px;color:${f.clr};margin-bottom:1px">${f.variant}</div>
+        <div class="dle-ftitle">${f.name}</div>
+      </div>
+    </div>
+    <div class="dle-fbody">
+      <div style="font-size:13px;color:var(--tx-lo);margin-bottom:16px;line-height:1.6">${f.desc}</div>
+      <div class="doc-chain">
+        ${f.chain.map((doc,i)=>{
+          const artObj=ARTIFACTS.find(x=>x.id===doc.art);
+          const nm=artObj?artObj.name:doc.art;
+          return `
+          ${i>0?`<div class="dc-conn"><div class="dc-conn-vl"></div><div class="dc-conn-lbl">▼ породжує</div><div class="dc-conn-vl"></div></div>`:''}
+          <div class="dc-row" style="--dcc:${f.clr}" onclick="if('${doc.art}'.startsWith('ART')){go('artifacts');showArt('${doc.art}')}">
+            <div class="dc-num">${String(i+1).padStart(2,'0')}</div>
+            <div class="dc-body">
+              <div class="dc-id">${doc.art} · ${doc.stage}</div>
+              <div class="dc-name">${nm}</div>
+              <div class="dc-info">${doc.desc}</div>
+              <div class="dc-roles">
+                ${C('Готує: '+doc.prepBy,'ch-role')}
+                ${C('Підписує: '+doc.signBy,'ch-role')}
+                ${C('Погоджує: '+doc.approveBy,'ch-artifact')}
+                ${doc.req?C('MANDATORY','ch-stage'):C('OPTIONAL','ch-status')}
+              </div>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// NORMATIVE
+// ═══════════════════════════════════════════════════════════════
+let normF='all';
+function renderNorm(filter){
+  normF=filter;
+  const data=filter==='all'?NORMATIVE:NORMATIVE.filter(n=>n.type===filter);
+  document.getElementById('norm-tbody').innerHTML=data.map(n=>`
+    <tr onclick="if('${n.link}'!='#')window.open('${n.link}','_blank')" style="${n.link!=='#'?'cursor:pointer':''}">
+      <td><span class="ntag nt-${n.type}">${n.type.toUpperCase()}</span></td>
+      <td style="font-family:var(--f-mono);font-size:9px;color:var(--tx-hi);white-space:nowrap">${n.num}</td>
+      <td style="color:var(--tx-hi)">${n.name}</td>
+      <td style="font-size:10.5px">${n.desc}</td>
+      <td><div class="chips">${n.stages.split(';').map(s=>C(s.trim(),'ch-stage',`go('stages');showStage('${s.trim()}')`)).join('')}</div></td>
+      <td><div class="chips">${n.variants.split(';').map(v=>C(v.trim(),'ch-variant')).join('')}</div></td>
+    </tr>
+  `).join('');
+}
+
+function fNorm(type,btn){
+  document.querySelectorAll('.fb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderNorm(type);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// STATUSES
+// ═══════════════════════════════════════════════════════════════
+function renderStatuses(){
+  document.getElementById('sm-flow').innerHTML=STATUSES.map((s,i)=>`
+    <div class="sm-node" style="--snc:${s.clr}" id="smn-${s.id}" onclick="showStatus('${s.id}')">
+      <div class="sm-vis">
+        <div class="sm-dot">${i+1}</div>
+        ${i<STATUSES.length-1?'<div class="sm-line"></div>':''}
+      </div>
+      <div class="sm-body">
+        <div class="sm-name">${s.id} — ${s.name}</div>
+        <div class="sm-desc">${s.desc}</div>
+        <div class="sm-trans">
+          ${s.next.map(ns=>`<div class="sm-tran" onclick="event.stopPropagation();showStatus('${ns}')">→ ${ns}</div>`).join('')}
+          ${!s.next.length?`<span style="font-family:var(--f-mono);font-size:7.5px;color:var(--tx-lo)">◼ Термінальний</span>`:''}
+        </div>
+      </div>
+    </div>
+  `).join('');
+  showStatus('ST-01');
+}
+
+function showStatus(sid){
+  const s=STATUSES.find(x=>x.id===sid);
+  if(!s)return;
+  document.querySelectorAll('.sm-node').forEach(n=>n.classList.remove('on'));
+  const node=document.getElementById('smn-'+sid);
+  if(node){node.classList.add('on');node.scrollIntoView({behavior:'smooth',block:'nearest'})}
+
+  document.getElementById('sm-detail').innerHTML=`
+  <div class="sm-detail">
+    <div style="display:flex;align-items:center;gap:11px;margin-bottom:13px">
+      <div style="width:42px;height:42px;border-radius:50%;background:${s.clr};display:flex;align-items:center;justify-content:center;font-family:var(--f-mono);font-size:11px;color:white;box-shadow:0 0 12px ${s.clr}55;flex-shrink:0">${s.id.replace('ST-','')}</div>
+      <div>
+        <div style="font-family:var(--f-mono);font-size:8px;color:${s.clr};letter-spacing:.12em;margin-bottom:2px">${s.id} · STATUS</div>
+        <div style="font-family:var(--f-disp);font-size:19px;letter-spacing:.06em;color:var(--tx-hi)">${s.name}</div>
+      </div>
+    </div>
+    <div style="font-size:13px;color:var(--tx-mid);line-height:1.6;margin-bottom:13px">${s.desc}</div>
+    <div class="divider"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">
+      <div>
+        <div style="font-family:var(--f-mono);font-size:7.5px;color:var(--tx-lo);letter-spacing:.12em;margin-bottom:5px">▶ TRIGGER ПЕРЕХОДУ</div>
+        <div style="font-size:12px;color:var(--tx-mid)">${s.trigger}</div>
+      </div>
+      <div>
+        <div style="font-family:var(--f-mono);font-size:7.5px;color:var(--tx-lo);letter-spacing:.12em;margin-bottom:5px">📄 АРТЕФАКТ-ТРИГЕР</div>
+        <div style="font-size:12px;color:var(--c-artifact)">${s.artifact}</div>
+      </div>
+      <div>
+        <div style="font-family:var(--f-mono);font-size:7.5px;color:var(--tx-lo);letter-spacing:.12em;margin-bottom:5px">👤 ВІДПОВІДАЛЬНА РОЛЬ</div>
+        <div style="font-size:12px;color:var(--c-role)">${s.role}</div>
+      </div>
+      <div>
+        <div style="font-family:var(--f-mono);font-size:7.5px;color:var(--tx-lo);letter-spacing:.12em;margin-bottom:7px">⇒ МОЖЛИВІ ПЕРЕХОДИ</div>
+        <div class="chips">${s.next.length?s.next.map(ns=>C(ns,'ch-status',`showStatus('${ns}')`)).join(''):`<span style="font-family:var(--f-mono);font-size:9px;color:var(--tx-lo)">Кінець lifecycle</span>`}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// OVT TYPES
+// ═══════════════════════════════════════════════════════════════
+function renderOVT(){
+  document.getElementById('ovt-grid').innerHTML=OVT.map(t=>`
+    <div class="ovt-card" style="--ovtc:${t.clr}" onclick="showOVT('${t.id}')">
+      <div class="ovt-ico">${t.emoji}</div>
+      <div class="ovt-name">${t.name}</div>
+      <div class="ovt-cat">${t.cat}</div>
+      <div class="chips">${t.variants.map(v=>C(v,'ch-variant')).join('')}</div>
+    </div>
+  `).join('');
+  showOVT('OVT-01');
+}
+
+function showOVT(oid){
+  const t=OVT.find(x=>x.id===oid);
+  if(!t)return;
+  document.querySelectorAll('.ovt-card').forEach(c=>c.classList.remove('on'));
+  const stagesForOVT=STAGES.filter(s=>(SVC[s.id]||[]).some(pv=>t.variants.includes(pv)));
+  document.getElementById('ovt-detail').innerHTML=`
+  <div style="background:var(--s1);border:1px solid ${t.clr}40;border-radius:var(--r-lg);overflow:hidden;animation:appear .2s;margin-bottom:10px">
+    <div style="padding:16px 18px;background:var(--s2);border-bottom:1px solid var(--wire-0);display:flex;align-items:center;gap:14px">
+      <div style="font-size:32px">${t.emoji}</div>
+      <div>
+        <div style="font-family:var(--f-mono);font-size:8px;color:${t.clr};margin-bottom:3px">${t.id} · ${t.cat}</div>
+        <div style="font-family:var(--f-disp);font-size:20px;letter-spacing:.05em;color:var(--tx-hi);margin-bottom:4px">${t.name}</div>
+        <div style="font-size:13px;color:var(--tx-mid)">${t.desc}</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--wire-0)">
+      <div style="background:var(--s1);padding:13px 15px">
+        <div style="font-family:var(--f-mono);font-size:7.5px;color:var(--tx-lo);letter-spacing:.14em;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--wire-0)">⑂ ДОСТУПНІ PROCESS VARIANTS</div>
+        <div class="chips">${t.variants.map(v=>{const vd=VARIANTS.find(x=>x.id===v);return vd?`<span class="chip ch-variant" style="border-color:${vd.clr}40;color:${vd.clr}" onclick="go('variants');showVariant('${v}')">${v} — ${vd.name}</span>`:''}).join('')}</div>
+      </div>
+      <div style="background:var(--s1);padding:13px 15px">
+        <div style="font-family:var(--f-mono);font-size:7.5px;color:var(--tx-lo);letter-spacing:.14em;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--wire-0)">⟶ LIFECYCLE МАРШРУТ</div>
+        <div class="chips">${stagesForOVT.map(s=>`<span class="chip ch-stage" style="border-color:${s.clr}40;color:${s.clr}" onclick="go('stages');showStage('${s.id}')">${s.label||s.name}</span>`).join('')}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ROLES
+// ═══════════════════════════════════════════════════════════════
+function renderRoles(){
+  document.getElementById('roles-grid').innerHTML=ROLES.map(r=>`
+    <div class="role-card">
+      <div class="role-id">${r.id} · RACI</div>
+      <div class="role-name">${r.name}</div>
+      <div class="role-org">${r.org}</div>
+      <div class="raci r${r.raci}">RACI: ${r.raci==='R'?'Responsible — Виконує':'R'===r.raci?'':r.raci==='A'?'Accountable — Узгоджує':r.raci==='C'?'Consulted — Консультує':'Informed'}</div>
+      <div style="font-size:11px;color:var(--tx-lo);margin-bottom:9px;line-height:1.5">${r.desc}</div>
+      <div style="font-family:var(--f-mono);font-size:7.5px;color:var(--tx-lo);letter-spacing:.1em;margin-bottom:5px">STAGES:</div>
+      <div class="chips">${r.stages.map(s=>`<span class="chip ch-stage" style="font-size:8px;cursor:pointer" onclick="go('stages');showStage('${s}')">${s}</span>`).join('')}</div>
+    </div>
+  `).join('');
+}
+
+// ── INIT ──
+go('overview');
+</script>
+</body>
+</html>
